@@ -64,7 +64,6 @@ async function main(): Promise<void> {
         secretHashes  
     });
     console.log({hash}, 'order created');
-	console.log(order.escrowExtension.address);
 
     // submit order  
     const _orderInfo = await sdk.submitOrder(  
@@ -90,7 +89,7 @@ async function main(): Promise<void> {
         // check if order finished  
         const {status} = await sdk.getOrderStatus(hash);
   
-        if (  
+        if (
             status === OrderStatus.Executed ||  
             status === OrderStatus.Expired ||  
             status === OrderStatus.Refunded  
@@ -99,7 +98,7 @@ async function main(): Promise<void> {
         }  
   
         await sleep(1000);
-    }  
+    }
   
     const statusResponse = await sdk.getOrderStatus(hash);
     console.log(statusResponse);

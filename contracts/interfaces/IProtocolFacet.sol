@@ -37,5 +37,33 @@ interface IProtocolFacet {
      * @param pair The address of the pool.
      * @return The decimal places for token0 and token1.
      */
-    function getPoolDecimals(address pair) external view returns (uint256, uint256);
+    function getPoolDecimals(address pair, uint32 eid) external view returns (uint256, uint256);
+
+    /**
+     * @dev Retrieves the current square root price of a pool.
+     * @param pair The address of the pool.
+     * @return The current square root price in Q64.96 format.
+     */
+    function getPoolSqrtRatioX96(address pair, uint32 eid) external view returns (uint160);
+
+    /**
+     * @dev Retrieves the tick spacing of a pool.
+     * @param pair The address of the pool.
+     * @return The tick spacing.
+     */
+    function getPoolTickSpacing(address pair, uint32 eid) external view returns (int24);
+
+    /**
+     * @dev Retrieves the current tick of a pool.
+     * @param pair The address of the pool.
+     * @return The current tick.
+     */
+    function getPoolTick(address pair, uint32 eid) external view returns (int24);
+
+    /**
+     * @dev Retrieves the addresses of both tokens in a pool.
+     * @param pair The address of the pool.
+     * @return The addresses of token0 and token1.
+     */
+    function getPoolTokens(address pair, uint32 eid) external view returns (address, address);
 }

@@ -5,6 +5,10 @@
     "hardhat": "^2.22.15"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.1.0"
+    "@1inch/cross-chain-sdk": "^0.1.10",
+    "@openzeppelin/contracts": "^5.1.0",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "web3": "^4.15.0"
   }
 }

@@ -8,12 +8,8 @@ interface IZapFacet {
 
     /// @notice Structure for zap storage
     /// @param inchRouter The address of the 1inch router
-    /// @param binSearchIterations The number of iterations for the secondary swap bin search
-    /// @param remainingLiquidityThreshold The remaining liquidity threshold, if sum of token0 and token1 after first increase is more than this, the swap will be adjusted
     struct ZapStorage {
         address inchRouter;
-        uint256 binSearchIterations;
-        uint256 remainingLiquidityThreshold;
     }
 
     /// @notice Emitted after swap
@@ -47,15 +43,11 @@ interface IZapFacet {
     /// @param initialAmounts Amounts of tokens after swap
     /// @param putAmounts Amounts of tokens put into the pool
     /// @param returnedAmounts Amounts of tokens returned to the user
-    /// @param amountToSwap Amount of tokens needed to be swapped secondarily
-    /// @param swapSide Flag indicating if swap token0 to token1 or vice versa
     error SimulationResult(
         address[] tokens, 
         uint256[] initialAmounts, 
         uint256[] putAmounts, 
-        uint256[] returnedAmounts,
-        uint256 amountToSwap,
-        bool swapSide
+        uint256[] returnedAmounts
     );
 
     /// @notice Structure for input token information
@@ -95,10 +87,6 @@ interface IZapFacet {
         address pool;
         int24[] tickRange;
         uint256[] amountsOut;
-
-        bool isSimulation;
-        bool adjustSwapSide;
-        uint256 adjustSwapAmount;
     }
 
     /// @notice Zaps in to a liquidity position

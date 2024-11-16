@@ -959,14 +959,6 @@
         {
           "type": "uint256[]",
           "name": "returnedAmounts"
-        },
-        {
-          "type": "uint256",
-          "name": "amountToSwap"
-        },
-        {
-          "type": "bool",
-          "name": "swapSide"
         }
       ]
     },
@@ -1058,19 +1050,6 @@
     },
     {
       "type": "function",
-      "name": "remainingLiquidityThreshold",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint256"
-        }
-      ]
-    },
-    {
-      "type": "function",
       "name": "setZapParams",
       "constant": false,
       "payable": false,
@@ -1082,14 +1061,6 @@
             {
               "type": "address",
               "name": "inchRouter"
-            },
-            {
-              "type": "uint256",
-              "name": "binSearchIterations"
-            },
-            {
-              "type": "uint256",
-              "name": "remainingLiquidityThreshold"
             }
           ]
         }
@@ -1155,18 +1126,6 @@
             {
               "type": "uint256[]",
               "name": "amountsOut"
-            },
-            {
-              "type": "bool",
-              "name": "isSimulation"
-            },
-            {
-              "type": "bool",
-              "name": "adjustSwapSide"
-            },
-            {
-              "type": "uint256",
-              "name": "adjustSwapAmount"
             }
           ]
         }

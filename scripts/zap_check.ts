@@ -1,10 +1,24 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
+import BN from "bn.js";
 
 dotenv.config();
 
 function fromE6(value: number) {
     return value / 10 ** 6;
+}
+
+function toE18(value: any) {
+    return new BN(value.toString()).muln(10 ** 18).toString();
+}
+
+function toE6(value: any) {
+    return new BN(value.toString()).muln(10 ** 6).toString();
+}
+
+async function getERC20ByAddress(address: any, wallet: any) {
+    const ERC20 = require("../abi/IERC20.json");
+    return await ethers.getContractAt(ERC20, address, wallet);
 }
 
 async function main(): Promise<void> {   
@@ -79,13 +93,14 @@ async function main(): Promise<void> {
     };
 
     console.log("proportions", proportions);
-    let request;
+    let requests = [];
     if (!proportions.inputToken && proportions.outputTokens.length === 0) {
-        request = {
+        requests = [{
+            "outAmount": "0",
             "data": "0x"
-        }
+        }];
     } else {
-        request = await get1InchRequest(
+        requests = await get1InchRequest(
             {
                 'inputToken': proportions.inputToken,
                 'outputTokens': proportions.outputTokens
@@ -94,11 +109,41 @@ async function main(): Promise<void> {
             account.address
         );
     }
+    console.log(requests);
+
+    let swapData = {
+        inputs: [{
+            'tokenAddress': proportions.inputToken.tokenAddress,
+            'amountIn': proportions.inputToken.amount
+        }],
+        outputs: proportions.outputTokens.map((e: any, i: number) => ({
+            'tokenAddress': e.tokenAddress,
+            'amountMin': new BN(requests[i].outAmount).muln(0.99).toString()
+        })),
+        data: requests.map((e: any) => e.data)
+    };
+
+    let paramsData = {
+        pool: poolId,
+        tickRange: tickRange,
+        amountsOut: [proportions.amountToken0Out, proportions.amountToken1Out]
+    }
+    console.log("swapData:", swapData);
+    console.log("paramsData:", paramsData);
+
+    let inputTokensERC20Arr = await Promise.all(inputTokens.map(async (token: any) => (await getERC20ByAddress(token.tokenAddress, account)).connect(account)));
+    for (let i = 0; i < inputTokensERC20Arr.length; i++) {
+        await (await inputTokensERC20Arr[i].approve(zap.address, (new BN(10).pow(new BN(64))).toString())).wait();
+    }
+
+    const zapResult = await (await zap.connect(account).zapIn(swapData, paramsData)).wait();    
+    console.log("zapResult:", zapResult);
 }
 
 async function get1InchRequest(params: any, zapAddress: string, walletAddress: string) {
     const url = `https://api.1inch.dev/swap/v6.0/${process.env.CHAIN_ID}/swap`;
 
+    let requests = [];
     for (let i = 0; i < params.outputTokens.length; i++) {
         const config = {
             headers: {
@@ -107,7 +152,7 @@ async function get1InchRequest(params: any, zapAddress: string, walletAddress: s
             params: {
                 "src": params.inputToken.tokenAddress,
                 "dst": params.outputTokens[i].tokenAddress,
-                "amount": params.inputToken.amount,
+                "amount": new BN(params.inputToken.amount).muln(Number(params.outputTokens[i].proportion)).toString(),
                 "from": zapAddress,
                 "origin": walletAddress,
                 "slippage": 1,
@@ -117,14 +162,21 @@ async function get1InchRequest(params: any, zapAddress: string, walletAddress: s
                 indexes: null
             }
         };
-
+    
         try {
             const response = await axios.get(url, config);
-            console.log(response.data);
+            requests.push({
+                "outAmount": response.data.dstAmount,
+                "data": response.data.tx.data
+            });
+            // console.log(config);
+            // console.log(response.data);
         } catch (error) {
             console.error(error);
         }
     }
+    // console.log("requests:", requests);
+    return requests;
 }
 
 main();

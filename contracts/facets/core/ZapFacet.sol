@@ -16,19 +16,11 @@ contract ZapFacet is IZapFacet, Modifiers {
 
     function setZapParams(ZapStorage memory args) external onlyAdmin {
         require(args.inchRouter != address(0), 'inchRouter is empty');
-        require(args.binSearchIterations != 0, 'binSearchIterations is empty');
-        
         zapStorage().inchRouter = args.inchRouter;
-        zapStorage().binSearchIterations = args.binSearchIterations;
-        zapStorage().remainingLiquidityThreshold = args.remainingLiquidityThreshold;
     }
 
     function inchRouter() public view returns (address) {
         return zapStorage().inchRouter;
-    }
-
-    function remainingLiquidityThreshold() public view returns (uint256) {
-        return zapStorage().remainingLiquidityThreshold;
     }
 
     function zapIn(SwapData memory swapData, ZapInParams memory paramsData) external {
@@ -114,18 +106,7 @@ contract ZapFacet is IZapFacet, Modifiers {
                 asset.transfer(msg.sender, balance);
             }
         }
-        if (!paramsData.isSimulation) {
-            emit ZapResult(tokenAmounts.tokens, tokenAmounts.initial, tokenAmounts.put, tokenAmounts.returned);
-        } else {
-            revert SimulationResult(
-                tokenAmounts.tokens, 
-                tokenAmounts.initial, 
-                tokenAmounts.put, 
-                tokenAmounts.returned, 
-                paramsData.adjustSwapAmount, 
-                paramsData.adjustSwapSide
-            );
-        }
+        emit ZapResult(tokenAmounts.tokens, tokenAmounts.initial, tokenAmounts.put, tokenAmounts.returned);
     }
 
     function _zapOut(uint256 tokenId, address recipient, address feeRecipient) internal {
@@ -200,60 +181,11 @@ contract ZapFacet is IZapFacet, Modifiers {
         PoolTokens memory poolTokens,
         uint256 tokenId
     ) internal {
-        if (paramsData.isSimulation) {
-            (paramsData.adjustSwapAmount, paramsData.adjustSwapSide) = simulateSwap(paramsData, poolTokens);
-        }
-        if (paramsData.adjustSwapAmount > 0) {
-            IMasterFacet(address(this)).swap(paramsData.pool, paramsData.adjustSwapAmount, 0, paramsData.adjustSwapSide);
-        }
         paramsData.amountsOut[0] = poolTokens.asset[0].balanceOf(address(this));
         paramsData.amountsOut[1] = poolTokens.asset[1].balanceOf(address(this));
         poolTokens.asset[0].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[0]);
         poolTokens.asset[1].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[1]);
 
         IMasterFacet(address(this)).increaseLiquidity(tokenId, paramsData.amountsOut[0], paramsData.amountsOut[1]);
-    }
-
-    struct BinSearchParams {
-        uint256 left;
-        uint256 right;
-        uint256 mid;
-    }
-
-    function simulateSwap(
-        ZapInParams memory paramsData, 
-        PoolTokens memory poolTokens
-    ) internal returns (uint256 amountToSwap, bool zeroForOne) {
-        zeroForOne = poolTokens.asset[0].balanceOf(address(this)) > poolTokens.asset[1].balanceOf(address(this));
-        BinSearchParams memory binSearchParams;
-        binSearchParams.right = poolTokens.asset[zeroForOne ? 0 : 1].balanceOf(address(this));
-        for (uint256 i = 0; i < zapStorage().binSearchIterations; i++) {
-            binSearchParams.mid = (binSearchParams.left + binSearchParams.right) / 2;
-
-            try IMasterFacet(address(this)).simulateSwap(
-                paramsData.pool, 
-                binSearchParams.mid, 
-                0, 
-                zeroForOne, 
-                paramsData.tickRange
-            ) 
-            {} catch (bytes memory _data) {
-                bytes memory data;
-                assembly {
-                    data := add(_data, 4)
-                }
-                uint256[] memory swapResult = new uint256[](4);
-                (swapResult[0], swapResult[1], swapResult[2], swapResult[3]) = abi.decode(data, (uint256, uint256, uint256, uint256));
-                bool compareResult = zeroForOne ? 
-                    IMasterFacet(address(this)).compareRatios(swapResult[0], swapResult[1], swapResult[2], swapResult[3]) : 
-                    IMasterFacet(address(this)).compareRatios(swapResult[1], swapResult[0], swapResult[3], swapResult[2]);
-                if (compareResult) {
-                    binSearchParams.left = binSearchParams.mid;
-                } else {
-                    binSearchParams.right = binSearchParams.mid;
-                }
-            }
-        }
-        amountToSwap = binSearchParams.mid;
     }
 }

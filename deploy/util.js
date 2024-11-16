@@ -70,7 +70,7 @@ async function mergeABIFacets(facets) {
 }
 
 async function getCurrentFacets(address) {
-    let contract = await ethers.getContractAt(require('./abi/DIAMOND_LOUPLE.json'), address);
+    let contract = await ethers.getContractAt(require('../abi/DIAMOND_LOUPLE.json'), address);
     return await contract.facets();
 }
 

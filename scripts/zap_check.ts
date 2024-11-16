@@ -1,19 +1,17 @@
-import {  
-    HashLock,  
-    NetworkEnum,  
-    OrderStatus,  
-    PresetEnum,  
-    PrivateKeyProviderConnector,  
-    SDK  
-} from '@1inch/cross-chain-sdk';
-import Web3 from 'web3';
-import {randomBytes} from 'node:crypto';
 import dotenv from 'dotenv';
+import axios from 'axios';
 
 dotenv.config();
 
+function fromE6(value: number) {
+    return value / 10 ** 6;
+}
+
 async function main(): Promise<void> {   
     let zap = await ethers.getContract("UniswapV3Arb");
+    let account = await new ethers.Wallet(process.env['PK'], ethers.provider);
+
+    // -------------- get user's positions ----------------------
 
     let positions = await zap.getPositions("0x01a9fF225a51750599b55C0a23c9d2fCD17969d4");
     console.log("length: ", positions.length);
@@ -33,6 +31,99 @@ async function main(): Promise<void> {
         console.log("currentTick:", positions[i].currentTick.toString());
         console.log("isStaked:", positions[i].isStaked.toString());
         console.log("----------------------------------");
+    }
+
+    // -------------------------------------------------------------
+
+    let poolId = "0x641C00A822e8b671738d32a431a4Fb6074E5c79d";
+    let tickRange = await zap.closestTicksForCurrentTick(poolId);
+    tickRange = [tickRange.left, tickRange.right];
+    console.log("tickRange", tickRange);
+    let inputTokens = [
+        {
+            tokenAddress: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+            amount: "100000",
+            price: "1000000000000000000"
+        }
+    ];
+
+    let proportionRequest = {
+        pair: poolId,
+        tickRange: tickRange,
+        inputTokens: inputTokens,
+        tokenIds: []
+    };
+
+    let proportionResponse = await zap.getProportionForZap(proportionRequest);
+
+    let handledResponse = {
+        inputTokenAddresses: proportionResponse.inputTokenAddresses,
+        inputTokenAmounts: proportionResponse.inputTokenAmounts.map((x: any) => x.toString()),
+        outputTokenAddresses: proportionResponse.outputTokenAddresses,
+        outputTokenProportions: proportionResponse.outputTokenProportions.map((x: any) => x.toString()),
+        outputTokenAmounts: proportionResponse.outputTokenAmounts.map((x: any) => x.toString()),
+        poolProportionsUsd: proportionResponse.poolProportionsUsd.map((x: any) => x.toString()),
+    };
+
+    let proportions = {
+        "inputToken": {
+            "tokenAddress": handledResponse.inputTokenAddresses[0],
+            "amount": handledResponse.inputTokenAmounts[0].toString()
+        },
+        "outputTokens": handledResponse.outputTokenAddresses.map((e: string, i: number) => ({
+            "tokenAddress": e,
+            "proportion": fromE6(handledResponse.outputTokenProportions[i].toString()),
+        })),
+        "amountToken0Out": handledResponse.outputTokenAmounts[0].toString(),
+        "amountToken1Out": handledResponse.outputTokenAmounts[1].toString(),
+    };
+
+    console.log("proportions", proportions);
+    let request;
+    if (!proportions.inputToken && proportions.outputTokens.length === 0) {
+        request = {
+            "data": "0x"
+        }
+    } else {
+        request = await get1InchRequest(
+            {
+                'inputToken': proportions.inputToken,
+                'outputTokens': proportions.outputTokens
+            }, 
+            zap.address, 
+            account.address
+        );
+    }
+}
+
+async function get1InchRequest(params: any, zapAddress: string, walletAddress: string) {
+    const url = `https://api.1inch.dev/swap/v6.0/${process.env.CHAIN_ID}/swap`;
+
+    for (let i = 0; i < params.outputTokens.length; i++) {
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${process.env.ONE_INCH_API_KEY}`
+            },
+            params: {
+                "src": params.inputToken.tokenAddress,
+                "dst": params.outputTokens[i].tokenAddress,
+                "amount": params.inputToken.amount,
+                "from": zapAddress,
+                "origin": walletAddress,
+                "slippage": 1,
+                "disableEstimate": "true"
+            },
+            paramsSerializer: {
+                indexes: null
+            }
+        };
+
+        try {
+            const response = await axios.get(url, config);
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 

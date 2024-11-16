@@ -35,4 +35,8 @@ interface IProportionFacet {
         address pair,
         int24[] memory tickRange
     ) external view returns (uint256, uint256);
+
+    function getProportionForZap(
+        GetProportionRequest memory request
+    ) external view returns (ResultOfProportion memory result);
 }

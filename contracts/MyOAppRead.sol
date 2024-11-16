@@ -5,7 +5,7 @@ pragma solidity ^0.8.22;
 import "./interfaces/core/IProportionFacet.sol";
 import "./interfaces/core/IOReadFacet.sol";
 
-contract OReadFacet is IOReadFacet, OAppRead, OAppOptionsType3 {
+contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
 
     uint8 internal constant MAP_ONLY = 0;
     uint8 internal constant REDUCE_ONLY = 1;

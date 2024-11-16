@@ -1,5 +1,5 @@
 {
-  "address": "0xbBDCB962C6Aee6A262B16E2e2518c417F26C628B",
+  "address": "0x15806163De683Af2CAB832C940C24e5924F7332e",
   "abi": [
     {
       "type": "error",
@@ -469,6 +469,22 @@
             {
               "type": "address",
               "name": "token1"
+            },
+            {
+              "type": "uint256",
+              "name": "decimals0"
+            },
+            {
+              "type": "uint256",
+              "name": "decimals1"
+            },
+            {
+              "type": "string",
+              "name": "symbol0"
+            },
+            {
+              "type": "string",
+              "name": "symbol1"
             },
             {
               "type": "uint256",

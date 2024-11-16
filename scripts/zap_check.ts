@@ -35,6 +35,10 @@ async function main(): Promise<void> {
         console.log("poolId:", positions[i].poolId.toString());
         console.log("token0:", positions[i].token0.toString());
         console.log("token1:", positions[i].token1.toString());
+        console.log("decimals0:", positions[i].decimals0.toString());   
+        console.log("decimals1:", positions[i].decimals1.toString());
+        console.log("symbol0:", positions[i].symbol0);
+        console.log("symbol1:", positions[i].symbol1);
         console.log("amount0:", positions[i].amount0.toString());
         console.log("amount1:", positions[i].amount1.toString());
         console.log("fee0:", positions[i].fee0.toString());
@@ -136,7 +140,7 @@ async function main(): Promise<void> {
         await (await inputTokensERC20Arr[i].approve(zap.address, (new BN(10).pow(new BN(64))).toString())).wait();
     }
 
-    const zapResult = await (await zap.connect(account).zapIn(swapData, paramsData)).wait();    
+    const zapResult = await (await zap.connect(account).zapIn(swapData, paramsData, { gasLimit: 100000 })).wait();
     console.log("zapResult:", zapResult);
 }
 

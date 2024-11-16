@@ -34,6 +34,10 @@ interface IProtocolFacet {
         address poolId;      // Address of the liquidity pool
         address token0;      // Address of the first token in the pair
         address token1;      // Address of the second token in the pair
+        uint256 decimals0;   // Decimals of token0
+        uint256 decimals1;   // Decimals of token1
+        string symbol0;      // Symbol of token0
+        string symbol1;      // Symbol of token1
         uint256 amount0;     // Amount of token0 in the position
         uint256 amount1;     // Amount of token1 in the position
         uint256 fee0;        // Accumulated fees for token0

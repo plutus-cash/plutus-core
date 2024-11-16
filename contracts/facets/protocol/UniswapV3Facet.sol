@@ -53,28 +53,28 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         });
     }
 
-    function getPoolDecimals(address pair, uint32 eid) external onlyDiamond view returns (uint256, uint256) {
+    function getPoolDecimals(address pair, uint32 _eid) external onlyDiamond view returns (uint256, uint256) {
         if (eid == eid()) {
             IUniswapV3Pool pool = IUniswapV3Pool(pair);
             return (IERC20Metadata(pool.token0()).decimals(), IERC20Metadata(pool.token1()).decimals());
         } else {
-            IMasterFacet(address(this)).
+            // IMasterFacet(address(this)).
         }
     }
 
-    function getPoolSqrtRatioX96(address pair, uint32 eid) external onlyDiamond view returns (uint160 sqrtRatioX96) {
+    function getPoolSqrtRatioX96(address pair, uint32 _eid) external onlyDiamond view returns (uint160 sqrtRatioX96) {
         (sqrtRatioX96,,,,,,) = IUniswapV3Pool(pair).slot0();
     }
 
-    function getPoolTickSpacing(address pair, uint32 eid) external onlyDiamond view returns (int24) {
+    function getPoolTickSpacing(address pair, uint32 _eid) external onlyDiamond view returns (int24) {
         return IUniswapV3Pool(pair).tickSpacing();
     }
 
-    function getPoolTick(address pair, uint32 eid) external onlyDiamond view returns (int24 tick) {
+    function getPoolTick(address pair, uint32 _eid) external onlyDiamond view returns (int24 tick) {
         (, tick,,,,,) = IUniswapV3Pool(pair).slot0();
     }
 
-    function getPoolTokens(address pair, uint32 eid) public view returns (address, address) {
+    function getPoolTokens(address pair, uint32 _eid) public view returns (address, address) {
         IUniswapV3Pool pool = IUniswapV3Pool(pair);
         return (pool.token0(), pool.token1());
     }

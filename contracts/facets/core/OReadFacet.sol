@@ -9,9 +9,10 @@ import { IOAppMapper } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/I
 import { IOAppReducer } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppReducer.sol";
 import { ReadCodecV1, EVMCallComputeV1, EVMCallRequestV1 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/ReadCodecV1.sol";
 
+import { Modifiers } from "../../interfaces/Modifiers.sol";
 import "../../interfaces/IMasterFacet.sol";
 
-contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
+contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer, Modifiers {
 
     mapping(uint32 => ChainConfig) public chainConfigs;
     uint32 public READ_CHANNEL;
@@ -103,7 +104,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         require(_response.length >= 32, "Invalid response length"); // quoteExactInputSingle returns multiple values
 
         // Decode the response to extract amountOut
-        (, , , , ) = abi.decode(_response, (address, address, uint160, int24, int24));
+        // (, , , , ) = abi.decode(_response, (address, address, uint160, int24, int24));
         return abi.encode(amountOut);
     }
 

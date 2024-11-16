@@ -2,14 +2,6 @@
 pragma solidity >=0.8.0;
 
 interface IOReadFacet {
-
-    uint8 internal constant MAP_ONLY = 0;
-    uint8 internal constant REDUCE_ONLY = 1;
-    uint8 internal constant MAP_AND_REDUCE = 2;
-    uint8 internal constant NONE = 3;
-
-    uint8 private constant READ_MSG_TYPE = 1;
-
     struct EvmReadRequest {
         uint16 appRequestLabel;
         uint32 targetEid;

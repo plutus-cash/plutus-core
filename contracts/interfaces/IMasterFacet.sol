@@ -11,4 +11,5 @@ import "./Modifiers.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-interface IMasterFacet is IMathFacet, IOReadFacet, IProtocolFacet, IProportionFacet, IZapFacet {}
+// interface IMasterFacet is IMathFacet, IOReadFacet, IProtocolFacet, IProportionFacet, IZapFacet {}
+interface IMasterFacet is IMathFacet, IProtocolFacet, IProportionFacet, IZapFacet {}

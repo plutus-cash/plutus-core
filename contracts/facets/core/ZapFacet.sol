@@ -15,17 +15,16 @@ contract ZapFacet is IZapFacet, Modifiers {
     }
 
     function setZapParams(ZapStorage memory args) external onlyAdmin {
-        
-        require(args.slippageBps != 0, 'slippageBps is empty');
+        require(args.inchRouter != address(0), 'inchRouter is empty');
         require(args.binSearchIterations != 0, 'binSearchIterations is empty');
         
-        zapStorage().slippageBps = args.slippageBps;
+        zapStorage().inchRouter = args.inchRouter;
         zapStorage().binSearchIterations = args.binSearchIterations;
         zapStorage().remainingLiquidityThreshold = args.remainingLiquidityThreshold;
     }
 
-    function slippageBps() public view returns (uint256) {
-        return zapStorage().slippageBps;
+    function inchRouter() public view returns (address) {
+        return zapStorage().inchRouter;
     }
 
     function remainingLiquidityThreshold() public view returns (uint256) {
@@ -79,7 +78,7 @@ contract ZapFacet is IZapFacet, Modifiers {
             put: new uint256[](2),
             returned: new uint256[](2)
         });
-        (poolTokens.token[0], poolTokens.token[1]) = IMasterFacet(address(this)).getPoolTokens(paramsData.pool);
+        (poolTokens.token[0], poolTokens.token[1]) = IMasterFacet(address(this)).getPoolTokens(paramsData.pool, IProtocolFacet(address(this)).eid());
         tokenAmounts.tokens = poolTokens.token;
         for (uint256 i = 0; i < 2; i++) {
             poolTokens.asset[i] = IERC20(poolTokens.token[i]);
@@ -93,11 +92,11 @@ contract ZapFacet is IZapFacet, Modifiers {
         uint256[] memory positionAmounts = new uint256[](2);
         uint256[] memory newPositionAmounts = new uint256[](2);
         if (tokenId != 0) {
-            (positionAmounts[0], positionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
+            (positionAmounts[0], positionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId, IProtocolFacet(address(this)).eid());
         }
         tokenId = manageLiquidity(paramsData, poolTokens, tokenId);
         adjustSwap(paramsData, poolTokens, tokenId);
-        (newPositionAmounts[0], newPositionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
+        (newPositionAmounts[0], newPositionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId, IProtocolFacet(address(this)).eid());
 
         for (uint256 i = 0; i < 2; i++) {
             if (newPositionAmounts[i] > positionAmounts[i]) {
@@ -130,7 +129,7 @@ contract ZapFacet is IZapFacet, Modifiers {
     }
 
     function _zapOut(uint256 tokenId, address recipient, address feeRecipient) internal {
-        IMasterFacet(address(this)).isOwner(tokenId, msg.sender);
+        // IMasterFacet(address(this)).isOwner(tokenId, msg.sender);
         IMasterFacet(address(this)).closePosition(tokenId, recipient, feeRecipient);
     }
 
@@ -146,14 +145,13 @@ contract ZapFacet is IZapFacet, Modifiers {
         }
 
         require(paramsData.amountsOut.length == 2, "Invalid output length, must be exactly 2");
-        require(IMasterFacet(address(this)).isValidPool(paramsData.pool), "Pool address in not valid");
         require(paramsData.tickRange.length == 2, "Invalid tick range length, must be exactly 2");
         require(paramsData.tickRange[0] < paramsData.tickRange[1], "Invalid tick range");
     }
 
     function swap1Inch(SwapData memory swapData) internal {
-        if (swapData.inputs.length > 0) {
-            (bool success,) = zapStorage().inchRouter.call{value : 0}(swapData.data);
+        for (uint256 i = 0; i < swapData.data.length; i++) {
+            (bool success,) = zapStorage().inchRouter.call{value : 0}(swapData.data[i]);
             require(success, "router swap invalid");
         }
 
@@ -206,14 +204,14 @@ contract ZapFacet is IZapFacet, Modifiers {
             (paramsData.adjustSwapAmount, paramsData.adjustSwapSide) = simulateSwap(paramsData, poolTokens);
         }
         if (paramsData.adjustSwapAmount > 0) {
-            masterFacet().swap(paramsData.pool, paramsData.adjustSwapAmount, 0, paramsData.adjustSwapSide);
+            IMasterFacet(address(this)).swap(paramsData.pool, paramsData.adjustSwapAmount, 0, paramsData.adjustSwapSide);
         }
         paramsData.amountsOut[0] = poolTokens.asset[0].balanceOf(address(this));
         paramsData.amountsOut[1] = poolTokens.asset[1].balanceOf(address(this));
         poolTokens.asset[0].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[0]);
         poolTokens.asset[1].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[1]);
 
-        masterFacet().increaseLiquidity(tokenId, paramsData.amountsOut[0], paramsData.amountsOut[1]);
+        IMasterFacet(address(this)).increaseLiquidity(tokenId, paramsData.amountsOut[0], paramsData.amountsOut[1]);
     }
 
     struct BinSearchParams {
@@ -232,7 +230,7 @@ contract ZapFacet is IZapFacet, Modifiers {
         for (uint256 i = 0; i < zapStorage().binSearchIterations; i++) {
             binSearchParams.mid = (binSearchParams.left + binSearchParams.right) / 2;
 
-            try masterFacet().simulateSwap(
+            try IMasterFacet(address(this)).simulateSwap(
                 paramsData.pool, 
                 binSearchParams.mid, 
                 0, 
@@ -247,8 +245,8 @@ contract ZapFacet is IZapFacet, Modifiers {
                 uint256[] memory swapResult = new uint256[](4);
                 (swapResult[0], swapResult[1], swapResult[2], swapResult[3]) = abi.decode(data, (uint256, uint256, uint256, uint256));
                 bool compareResult = zeroForOne ? 
-                    masterFacet().compareRatios(swapResult[0], swapResult[1], swapResult[2], swapResult[3]) : 
-                    masterFacet().compareRatios(swapResult[1], swapResult[0], swapResult[3], swapResult[2]);
+                    IMasterFacet(address(this)).compareRatios(swapResult[0], swapResult[1], swapResult[2], swapResult[3]) : 
+                    IMasterFacet(address(this)).compareRatios(swapResult[1], swapResult[0], swapResult[3], swapResult[2]);
                 if (compareResult) {
                     binSearchParams.left = binSearchParams.mid;
                 } else {

@@ -9,6 +9,8 @@ pragma solidity >=0.8.0;
  */
 interface IProtocolFacet {
 
+    event CollectRewards(uint256 fee0, uint256 fee1);
+
     /// @notice Structure for protocol storage
     /// @param npm The address of the non-fungible position manager
     struct ProtocolStorage {
@@ -24,6 +26,8 @@ interface IProtocolFacet {
         int24 tickSpacing;
     }
 
+    error SwapError(uint256 amount0, uint256 amount1, uint256 ratio0, uint256 ratio1);
+
     /// @notice Sets the protocol parameters
     /// @param args The protocol parameters
     function setProtocolParams(ProtocolStorage memory args) external;
@@ -35,6 +39,34 @@ interface IProtocolFacet {
     function eid() external view returns (uint32);
 
     function getPoolData(address pair) external view returns (PoolData memory);
+
+    function closePosition(uint256 tokenId, address recipient, address feeRecipient) external;
+
+    function mintPosition(
+        address pair,
+        int24 tickRange0,
+        int24 tickRange1,
+        uint256 amountOut0,
+        uint256 amountOut1,
+        address recipient
+    ) external returns (uint256 tokenId);
+
+    function increaseLiquidity(uint256 tokenId, uint256 amount0, uint256 amount1) external returns (uint128 liquidity);
+
+    function swap(
+        address pair,
+        uint256 amountIn,
+        uint160 sqrtPriceLimitX96,
+        bool zeroForOne
+    ) external;
+
+    function simulateSwap(
+        address pair,
+        uint256 amountIn,
+        uint160 sqrtPriceLimitX96,
+        bool zeroForOne,
+        int24[] memory tickRange
+    ) external;
 
     /**
      * @dev Retrieves the decimal places for both tokens in a pool.
@@ -70,4 +102,8 @@ interface IProtocolFacet {
      * @return The addresses of token0 and token1.
      */
     function getPoolTokens(address pair, uint32 eid) external view returns (address, address);
+
+    function getPositionAmounts(uint256 tokenId, uint32 _eid) external view returns (uint256 amount0, uint256 amount1);
+
+    function getPositionTicks(uint256 tokenId, uint32 _eid) external view returns (int24 tickLower, int24 tickUpper);
 }

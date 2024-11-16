@@ -1,4 +1,5 @@
 const { deployments, ethers } = require('hardhat');
+const { mergeABIs } = require('hardhat-deploy/dist/src/utils');
 
 async function getOrDeploy(name, deployer, skipIfAlreadyDeployed) {
     return await deployments.deploy(name, {
@@ -12,7 +13,6 @@ async function getOrDeploy(name, deployer, skipIfAlreadyDeployed) {
 async function deployDiamond(name, deployer) {
     let diamondCutFacet = await getOrDeploy('DiamondCutFacet', deployer, true);
     let diamondLoupeFacet = await getOrDeploy('DiamondLoupeFacet', deployer, true);
-
     try {
         let contract = await ethers.getContract(name);
         console.log(`Diamond: ${name} already deployed at ${contract.address}`);
@@ -292,6 +292,21 @@ function remove (functionNames) {
             }
         }
         return true
+    })
+    selectors.contract = this.contract
+    selectors.remove = this.remove
+    selectors.get = this.get
+    return selectors
+}
+
+function get(functionNames) {
+    const selectors = this.filter((v) => {
+        for (const functionName of functionNames) {
+            if (v === this.contract.interface.getSighash(functionName)) {
+                return true
+            }
+        }
+        return false
     })
     selectors.contract = this.contract
     selectors.remove = this.remove

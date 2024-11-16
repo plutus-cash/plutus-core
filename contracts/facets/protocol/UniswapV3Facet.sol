@@ -140,7 +140,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
             ratio[1]
         );
     }
- 
+
     function uniswapV3SwapCallback(
         int256 amount0Delta,
         int256 amount1Delta,
@@ -286,6 +286,13 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         (, result.currentTick,,,,,) = pool.slot0();
         (result.amount0, result.amount1) = getPositionAmounts(tokenId);
         (result.fee0, result.fee1) = _getFees(tokenId);
+
+        IERC20Metadata token0 = IERC20Metadata(result.token0);
+        IERC20Metadata token1 = IERC20Metadata(result.token1);
+        result.decimals0 = token0.decimals();
+        result.decimals1 = token1.decimals();
+        result.symbol0 = token0.symbol();
+        result.symbol1 = token1.symbol();
 
         return result;
     }

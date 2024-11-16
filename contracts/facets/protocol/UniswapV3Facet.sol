@@ -247,4 +247,50 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
     function _getNpmInstance() internal view returns (INonfungiblePositionManager) {
         return INonfungiblePositionManager(protocolStorage().npm);
     }
+
+    function getPositions(address owner) external view returns (PositionInfo[] memory result) {
+        uint256 validStakedPositionsLength = _getStakedPositionsLength(owner);
+        uint256 positionCount;
+        result = new PositionInfo[](validStakedPositionsLength);
+
+        uint256 stakedPositionsLength = _getNpmInstance().balanceOf(owner);
+        for (uint256 i = 0; i < stakedPositionsLength; i++) {
+            uint256 tokenId = _getNpmInstance().tokenOfOwnerByIndex(owner, i);
+            if (getLiquidity(tokenId) > 0) {
+                result[positionCount] = _getPositionInfo(tokenId);
+                result[positionCount].isStaked = true;
+                positionCount++;
+            }
+        }
+    }
+
+    function _getStakedPositionsLength(address owner) internal view returns (uint256 length) {
+        length = 0;
+        uint256 positionsLength = _getNpmInstance().balanceOf(owner);
+        for (uint256 i = 0; i < positionsLength; i++) {
+            uint256 tokenId = _getNpmInstance().tokenOfOwnerByIndex(owner, i);
+            if (getLiquidity(tokenId) > 0) {
+                length++;
+            }
+        }
+    }
+
+    function _getPositionInfo(uint256 tokenId) internal view returns (PositionInfo memory) {
+        PositionInfo memory result;
+        result.platform = "UniswapV3";
+        result.tokenId = tokenId;
+        (result.token0, result.token1) = getPositionTokens(tokenId);
+        (result.tickLower, result.tickUpper) = getPositionTicks(tokenId);
+        result.poolId = getPool(tokenId);
+        IUniswapV3Pool pool = IUniswapV3Pool(result.poolId);
+        (, result.currentTick,,,,,) = pool.slot0();
+        (result.amount0, result.amount1) = getPositionAmounts(tokenId);
+        (result.fee0, result.fee1) = _getFees(tokenId);
+
+        return result;
+    }
+
+    function _getFees(uint256 tokenId) internal view returns (uint256 fee0, uint256 fee1) {
+        (fee0, fee1) = PositionValue.fees(_getNpmInstance(), tokenId);
+    }
 }

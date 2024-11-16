@@ -8,6 +8,8 @@ interface IOReadFacet {
     uint8 internal constant MAP_AND_REDUCE = 2;
     uint8 internal constant NONE = 3;
 
+    uint8 private constant READ_MSG_TYPE = 1;
+
     struct EvmReadRequest {
         uint16 appRequestLabel;
         uint32 targetEid;

@@ -128,7 +128,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         bool zeroForOne,
         int24[] memory tickRange
     ) external onlyDiamond {
-        (address token0Address, address token1Address) = getPoolTokens(pair, eid());
+        (address token0Address, address token1Address) = getPoolTokens(pair);
         swap(pair, amountIn, sqrtPriceLimitX96, zeroForOne);
  
         uint256[] memory ratio = new uint256[](2);
@@ -186,35 +186,31 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         });
     }
 
-    function getPoolDecimals(address pair, uint32 _eid) external onlyDiamond view returns (uint256, uint256) {
-        if (_eid == eid()) {
-            IUniswapV3Pool pool = IUniswapV3Pool(pair);
-            return (IERC20Metadata(pool.token0()).decimals(), IERC20Metadata(pool.token1()).decimals());
-        } else {
-            // IMasterFacet(address(this)).
-        }
+    function getPoolDecimals(address pair) external onlyDiamond view returns (uint256, uint256) {
+        IUniswapV3Pool pool = IUniswapV3Pool(pair);
+        return (IERC20Metadata(pool.token0()).decimals(), IERC20Metadata(pool.token1()).decimals());
     }
 
-    function getPoolSqrtRatioX96(address pair, uint32 _eid) external onlyDiamond view returns (uint160 sqrtRatioX96) {
+    function getPoolSqrtRatioX96(address pair) external onlyDiamond view returns (uint160 sqrtRatioX96) {
         (sqrtRatioX96,,,,,,) = IUniswapV3Pool(pair).slot0();
     }
 
-    function getPoolTickSpacing(address pair, uint32 _eid) external onlyDiamond view returns (int24) {
+    function getPoolTickSpacing(address pair) external onlyDiamond view returns (int24) {
         return IUniswapV3Pool(pair).tickSpacing();
     }
 
-    function getPoolTick(address pair, uint32 _eid) external onlyDiamond view returns (int24 tick) {
+    function getPoolTick(address pair) external onlyDiamond view returns (int24 tick) {
         (, tick,,,,,) = IUniswapV3Pool(pair).slot0();
     }
 
-    function getPoolTokens(address pair, uint32 _eid) public view returns (address, address) {
+    function getPoolTokens(address pair) public view returns (address, address) {
         IUniswapV3Pool pool = IUniswapV3Pool(pair);
         return (pool.token0(), pool.token1());
     }
 
-    function getPositionAmounts(uint256 tokenId, uint32 _eid) public view returns (uint256 amount0, uint256 amount1) {
-        address poolId = getPool(tokenId, _eid);
-        (int24 tickLower, int24 tickUpper) = getPositionTicks(tokenId, _eid);
+    function getPositionAmounts(uint256 tokenId) public view returns (uint256 amount0, uint256 amount1) {
+        address poolId = getPool(tokenId);
+        (int24 tickLower, int24 tickUpper) = getPositionTicks(tokenId);
         (uint160 sqrtRatioX96,,,,,,) = IUniswapV3Pool(poolId).slot0();
         (amount0, amount1) = LiquidityAmounts.getAmountsForLiquidity(
             sqrtRatioX96,
@@ -228,14 +224,14 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         (,, token0, token1,,,,,,,,) = _getNpmInstance().positions(tokenId);
     }
 
-    function getPool(uint256 tokenId, uint32 _eid) public view returns (address poolId) {
+    function getPool(uint256 tokenId) public view returns (address poolId) {
         (address token0, address token1) = getPositionTokens(tokenId);
         (,,,, uint24 fee,,,,,,,) = _getNpmInstance().positions(tokenId);
         IUniswapV3Factory factory = IUniswapV3Factory(_getNpmInstance().factory());
         poolId = factory.getPool(token0, token1, fee);
     }
 
-    function getPositionTicks(uint256 tokenId, uint32 _eid) public view returns (int24 tickLower, int24 tickUpper) {
+    function getPositionTicks(uint256 tokenId) public view returns (int24 tickLower, int24 tickUpper) {
         (,,,,, tickLower, tickUpper,,,,,) = _getNpmInstance().positions(tokenId);
     }
 
@@ -244,7 +240,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
     }
 
     function _getTickSpacing(uint256 tokenId) internal view returns (int24 tickSpacing) {
-        IUniswapV3Pool pool = IUniswapV3Pool(getPool(tokenId, eid()));
+        IUniswapV3Pool pool = IUniswapV3Pool(getPool(tokenId));
         tickSpacing = pool.tickSpacing();
     }
 

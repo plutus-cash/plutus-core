@@ -73,37 +73,37 @@ interface IProtocolFacet {
      * @param pair The address of the pool.
      * @return The decimal places for token0 and token1.
      */
-    function getPoolDecimals(address pair, uint32 eid) external view returns (uint256, uint256);
+    function getPoolDecimals(address pair) external view returns (uint256, uint256);
 
     /**
      * @dev Retrieves the current square root price of a pool.
      * @param pair The address of the pool.
      * @return The current square root price in Q64.96 format.
      */
-    function getPoolSqrtRatioX96(address pair, uint32 eid) external view returns (uint160);
+    function getPoolSqrtRatioX96(address pair) external view returns (uint160);
 
     /**
      * @dev Retrieves the tick spacing of a pool.
      * @param pair The address of the pool.
      * @return The tick spacing.
      */
-    function getPoolTickSpacing(address pair, uint32 eid) external view returns (int24);
+    function getPoolTickSpacing(address pair) external view returns (int24);
 
     /**
      * @dev Retrieves the current tick of a pool.
      * @param pair The address of the pool.
      * @return The current tick.
      */
-    function getPoolTick(address pair, uint32 eid) external view returns (int24);
+    function getPoolTick(address pair) external view returns (int24);
 
     /**
      * @dev Retrieves the addresses of both tokens in a pool.
      * @param pair The address of the pool.
      * @return The addresses of token0 and token1.
      */
-    function getPoolTokens(address pair, uint32 eid) external view returns (address, address);
+    function getPoolTokens(address pair) external view returns (address, address);
 
-    function getPositionAmounts(uint256 tokenId, uint32 _eid) external view returns (uint256 amount0, uint256 amount1);
+    function getPositionAmounts(uint256 tokenId) external view returns (uint256 amount0, uint256 amount1);
 
-    function getPositionTicks(uint256 tokenId, uint32 _eid) external view returns (int24 tickLower, int24 tickUpper);
+    function getPositionTicks(uint256 tokenId) external view returns (int24 tickLower, int24 tickUpper);
 }

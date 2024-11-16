@@ -7,28 +7,28 @@ import "../../libraries/util/Math.sol";
 
 contract MathFacet is IMathFacet, Modifiers {
     
-    function getCurrentPrice(address pair, uint32 eid) external view returns (uint256) {
-        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair, eid);
-        uint160 sqrtRatioX96 = IMasterFacet(address(this)).getPoolSqrtRatioX96(pair, eid);
+    function getCurrentPrice(address pair) external view returns (uint256) {
+        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair);
+        uint160 sqrtRatioX96 = IMasterFacet(address(this)).getPoolSqrtRatioX96(pair);
         return (FullMath.mulDiv(uint256(sqrtRatioX96) * 10 ** (dec0 + PRECISION_DEC), uint256(sqrtRatioX96), 2 ** (96 + 96)));
     }
 
-    function getTickSpacing(address pair, uint32 eid) external view returns (int24) {
-        return IMasterFacet(address(this)).getPoolTickSpacing(pair, eid);
+    function getTickSpacing(address pair) external view returns (int24) {
+        return IMasterFacet(address(this)).getPoolTickSpacing(pair);
     }
 
-    function tickToPrice(address pair, int24 tick, uint32 eid) external view returns (uint256) {
-        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair, eid);
+    function tickToPrice(address pair, int24 tick) external view returns (uint256) {
+        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair);
         uint256 dec = 10 ** (dec0 + PRECISION_DEC);
         uint160 sqrtRatioX96 = TickMath.getSqrtRatioAtTick(tick);
         return (_getPriceBySqrtRatio(sqrtRatioX96, dec));
     }
 
     // NOTE: prices should be multiplied by 10 ** PRECISION_DEC
-    function priceToClosestTick(address pair, uint256[] memory prices, uint32 eid) external view returns (int24[] memory) {
-        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair, eid);
+    function priceToClosestTick(address pair, uint256[] memory prices) external view returns (int24[] memory) {
+        (uint256 dec0,) = IMasterFacet(address(this)).getPoolDecimals(pair);
         uint256 dec = 10 ** (dec0 + PRECISION_DEC);
-        int24 tickSpacing = IMasterFacet(address(this)).getPoolTickSpacing(pair, eid);
+        int24 tickSpacing = IMasterFacet(address(this)).getPoolTickSpacing(pair);
 
         int24[] memory closestTicks = new int24[](prices.length);
         for (uint256 i = 0; i < prices.length; i++) {
@@ -43,13 +43,13 @@ contract MathFacet is IMathFacet, Modifiers {
         return closestTicks;
     }
     
-    function getCurrentPoolTick(address pair, uint32 eid) external view returns (int24) {
-        return IMasterFacet(address(this)).getPoolTick(pair, eid);
+    function getCurrentPoolTick(address pair) external view returns (int24) {
+        return IMasterFacet(address(this)).getPoolTick(pair);
     }
 
-    function closestTicksForCurrentTick(address pair, uint32 eid) external view returns (int24 left, int24 right) {
-        int24 tick = IMasterFacet(address(this)).getPoolTick(pair, eid);
-        int24 tickSpacing = IMasterFacet(address(this)).getPoolTickSpacing(pair, eid);
+    function closestTicksForCurrentTick(address pair) external view returns (int24 left, int24 right) {
+        int24 tick = IMasterFacet(address(this)).getPoolTick(pair);
+        int24 tickSpacing = IMasterFacet(address(this)).getPoolTickSpacing(pair);
         if (tick % tickSpacing >= 0) {
             left = tick - tick % tickSpacing;
             right = tick + tickSpacing - (tick % tickSpacing);

@@ -94,7 +94,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         bytes calldata
     ) internal override {
         require(_message.length == 32, "Invalid message length");
-        uint256 averagePrice = abi.decode(_message, (uint256));
-        emit AggregatedPrice(averagePrice);
+        // uint256 averagePrice = abi.decode(_message, (uint256));
+        
     }
 }

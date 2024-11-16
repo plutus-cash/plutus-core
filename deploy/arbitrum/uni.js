@@ -11,12 +11,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     console.log('deployer', deployer);
     let zap = await deployDiamond(name, deployer);
     const facetNames = [
-        // 'AccessControlFacet',
-        // 'UniswapV3Facet',
+        'AccessControlFacet',
+        'UniswapV3Facet',
         'OReadFacet',
-        // 'MathFacet',
+        'MathFacet',
         'ProportionFacet',
-        // 'ZapFacet'
+        'ZapFacet'
     ];
     await deployFacets(facetNames, deployer);
     const cut = await prepareCut(facetNames, zap.address, deployer);

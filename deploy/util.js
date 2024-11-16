@@ -239,7 +239,7 @@ function getFacetActionName(action) {
 async function updateFacets(cut, address, deployer) {
     console.log(`${address}.diamondCut ...`);
     let strategy = await ethers.getContractAt('IDiamondCut', address);
-    await (await strategy.diamondCut(cut, ethers.constants.AddressZero, '0x', {gasPrice: 3000000000})).wait();
+    await (await strategy.diamondCut(cut, ethers.constants.AddressZero, '0x', {gasLimit: 15000000})).wait();
     console.log(`${address}.diamondCut done()`);
 }
 

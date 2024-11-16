@@ -1,7 +1,7 @@
 # Plutus
 
-[dapp code!!!](https://github.com/plutus-cash/plutus-app)
-[backend code!!!](https://github.com/plutus-cash/plutus-backend)
+# [dapp code!!!](https://github.com/plutus-cash/plutus-app) \\
+# [backend code!!!](https://github.com/plutus-cash/plutus-backend)
 
 **Plutus** is an innovative decentralized application (dApp) designed to streamline cross-chain liquidity management by leveraging the capabilities of [LayerZero](https://layerzero.network/) and [1inch Fusion+](https://1inch.io/). The platform enables users to seamlessly invest assets from one blockchain into liquidity pools on another while maintaining ownership of their funds throughout the entire process. This approach sets Plutus apart from other aggregators by ensuring users retain control over their assets at all times.
 

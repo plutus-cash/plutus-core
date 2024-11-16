@@ -10,13 +10,12 @@ contract ProportionFacet is IProportionFacet, Modifiers {
 
     function getProportion(
         address pair,
-        int24[] memory tickRange,
-        uint32 _eid
+        int24[] memory tickRange
     ) public view returns (uint256 token0Amount, uint256 token1Amount) {
-        (uint256 decimals0, uint256 decimals1) = IMasterFacet(address(this)).getPoolDecimals(pair, _eid);
+        (uint256 decimals0, uint256 decimals1) = IMasterFacet(address(this)).getPoolDecimals(pair);
         uint256 dec0 = 10 ** decimals0;
         uint256 dec1 = 10 ** decimals1;
-        uint160 sqrtRatioX96 = IMasterFacet(address(this)).getPoolSqrtRatioX96(pair, _eid);
+        uint160 sqrtRatioX96 = IMasterFacet(address(this)).getPoolSqrtRatioX96(pair);
 
         uint160 sqrtRatio0 = TickMath.getSqrtRatioAtTick(tickRange[0]);
         uint160 sqrtRatio1 = TickMath.getSqrtRatioAtTick(tickRange[1]);

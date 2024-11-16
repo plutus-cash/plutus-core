@@ -20,7 +20,6 @@ interface IProportionFacet {
     /// @return The proportion of the pool in abstract measurements
     function getProportion(
         address pair,
-        int24[] memory tickRange,
-        uint32 _eid
+        int24[] memory tickRange
     ) external view returns (uint256, uint256);
 }

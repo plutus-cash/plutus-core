@@ -18,6 +18,8 @@ contract OReadFacet is IOReadFacet, OAppRead, OAppOptionsType3, Modifiers {
     mapping(uint32 => ChainConfig) public chainConfigs;
     uint32 public READ_CHANNEL;
 
+    uint256 public amount1;
+    uint256 public amount2;
 
     constructor(
         address _endpoint,
@@ -55,10 +57,8 @@ contract OReadFacet is IOReadFacet, OAppRead, OAppOptionsType3, Modifiers {
         EVMCallRequestV1[] memory readRequests = new EVMCallRequestV1[](1);
         
         ChainConfig memory config = chainConfigs[targetEid];
-        
-        address params = _pool;
 
-        bytes memory callData = abi.encodeWithSelector(IProportionFacet.getProportion.selector, params);
+        bytes memory callData = abi.encodeWithSelector(IProportionFacet.getProportion.selector, _pool, tickRange);
         readRequests[0] = EVMCallRequestV1({
             appRequestLabel: uint16(1),
             targetEid: targetEid,
@@ -97,7 +97,6 @@ contract OReadFacet is IOReadFacet, OAppRead, OAppOptionsType3, Modifiers {
         bytes calldata
     ) internal override {
         require(_message.length == 32, "Invalid message length");
-        // (amount, shares) = abi.decode(_message, (uint128, uint128));
-        
+        (amount1, amount2) = abi.decode(_message, (uint256, uint256));   
     }
 }

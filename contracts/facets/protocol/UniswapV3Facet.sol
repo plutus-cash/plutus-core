@@ -132,7 +132,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         swap(pair, amountIn, sqrtPriceLimitX96, zeroForOne);
  
         uint256[] memory ratio = new uint256[](2);
-        (ratio[0], ratio[1]) = IMasterFacet(address(this)).getProportion(pair, tickRange, eid());
+        (ratio[0], ratio[1]) = IMasterFacet(address(this)).getProportion(pair, tickRange);
         revert SwapError(
             IERC20(token0Address).balanceOf(address(this)),
             IERC20(token1Address).balanceOf(address(this)),

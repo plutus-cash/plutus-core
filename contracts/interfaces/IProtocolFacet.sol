@@ -28,6 +28,23 @@ interface IProtocolFacet {
 
     error SwapError(uint256 amount0, uint256 amount1, uint256 ratio0, uint256 ratio1);
 
+    struct PositionInfo {
+        string platform;     // The protocol where the position is held
+        uint256 tokenId;     // Unique identifier for the position
+        address poolId;      // Address of the liquidity pool
+        address token0;      // Address of the first token in the pair
+        address token1;      // Address of the second token in the pair
+        uint256 amount0;     // Amount of token0 in the position
+        uint256 amount1;     // Amount of token1 in the position
+        uint256 fee0;        // Accumulated fees for token0
+        uint256 fee1;        // Accumulated fees for token1
+        uint256 emissions;   // Emissions rewards
+        int24 tickLower;     // Lower tick of the position's price range
+        int24 tickUpper;     // Upper tick of the position's price range
+        int24 currentTick;   // Current tick of the pool
+        bool isStaked;       // Whether the position is staked
+    }
+
     /// @notice Sets the protocol parameters
     /// @param args The protocol parameters
     function setProtocolParams(ProtocolStorage memory args) external;
@@ -106,4 +123,8 @@ interface IProtocolFacet {
     function getPositionAmounts(uint256 tokenId) external view returns (uint256 amount0, uint256 amount1);
 
     function getPositionTicks(uint256 tokenId) external view returns (int24 tickLower, int24 tickUpper);
+
+    function getPositionTokens(uint256 tokenId) external view returns (address token0, address token1);
+
+    function getPositions(address owner) external view returns (PositionInfo[] memory result);
 }

@@ -13,7 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const facetNames = [
         'AccessControlFacet',
         'UniswapV3Facet',
-        'OReadFacet',
+        // 'OReadFacet',
         'MathFacet',
         'ProportionFacet',
         'ZapFacet'

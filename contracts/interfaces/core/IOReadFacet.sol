@@ -20,5 +20,11 @@ interface IOReadFacet {
         address to;
     }
 
+    struct ChainConfig {
+        uint16 confirmations; // Number of confirmations required
+        address zapAddress; // Address of the zap contract
+        // address poolAddress; // Address of the pool contract
+    }
+
     
 }

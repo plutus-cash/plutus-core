@@ -18,11 +18,12 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
     uint8 internal constant COMPUTE_SETTING_MAP_REDUCE = 2;
     uint8 internal constant COMPUTE_SETTING_NONE = 3;
 
+    mapping(uint32 => ChainConfig) public chainConfigs;
+
     constructor(
         address _endpoint,
-        address _delegate,
         string memory _identifier
-    ) OAppRead(_endpoint, _delegate) Ownable(_delegate) {
+    ) OAppRead(_endpoint, msg.sender) Ownable(msg.sender) {
         identifier = _identifier;
     }
 

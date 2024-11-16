@@ -35,7 +35,11 @@ interface IOReadFacet {
         // address poolAddress; // Address of the pool contract
     }
 
-    function getProportion(uint32 _eid, address _pool, int24[] memory tickRange, bytes calldata _extraOptions) external payable returns (MessagingReceipt memory receipt);
+    struct LzStorage {
+        uint256 amount0;
+        uint256 amount1;
+        address oread;
+    }
 
-    
+    function getProportionLZ(uint32 _eid, address _pool, int24[] memory tickRange, bytes calldata _extraOptions) external payable returns (MessagingReceipt memory receipt);    
 }

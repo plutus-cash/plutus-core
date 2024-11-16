@@ -29,11 +29,18 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     };
     let protocolParams = {
         npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
-        eid: 42161
+        eid: 30110
     };
+
+    let lzParams = {
+        amount0: 0n,
+        amount1: 0n,
+        oread: "0x5be0CC1EF5b089d6cB4958910cc3dccD6AafB7Ae"
+    }
     
     await (await zap.setZapParams(zapParams)).wait();
     await (await zap.setProtocolParams(protocolParams)).wait();
+    await (await zap.setLzStorage(lzParams)).wait();
     console.log('setParams done()');
 };
 

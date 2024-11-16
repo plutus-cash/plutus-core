@@ -15,7 +15,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         // 'UniswapV3Facet',
         'OReadFacet',
         // 'MathFacet',
-        'ProportionFacet',
+        // 'ProportionFacet',
         // 'ZapFacet'
     ];
     await deployFacets(facetNames, deployer);
@@ -30,8 +30,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         remainingLiquidityThreshold: 1
     };
     let protocolParams = {
-        npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
-        eid: 42161
+        npm: "0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1",
+        eid: 30184
     };
     
     await (await zap.setZapParams(zapParams)).wait();

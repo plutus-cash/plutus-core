@@ -255,21 +255,14 @@ async function deployFacets(facetNames, deployer) {
 
         let newFacetContract;
 
-        if (facetName == "OReadFacet") {
-            newFacetContract = await deployments.deploy(facetName, {
-                from: deployer,
-                args: ["0x1a44076050125825900e736c501f859c50fE728c", 4294967295],
-                log: true,
-                skipIfAlreadyDeployed: false,
-            });
-        } else {
-            newFacetContract = await deployments.deploy(facetName, {
-                from: deployer,
-                args: [],
-                log: true,
-                skipIfAlreadyDeployed: false,
-            });
-        }
+        
+        newFacetContract = await deployments.deploy(facetName, {
+            from: deployer,
+            args: [],
+            log: true,
+            skipIfAlreadyDeployed: false,
+        });
+        
 
         if (
             oldContract !== undefined &&

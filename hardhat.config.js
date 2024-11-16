@@ -48,5 +48,12 @@ module.exports = {
       accounts: [process.env.PK],
       gasPrice: "auto"
     }
+  },
+  etherscan: {
+    apiKey: {
+        mainnet: "YOUR_ETHERSCAN_API_KEY",
+        optimisticEthereum: "YOUR_OPTIMISTIC_ETHERSCAN_API_KEY",
+        arbitrum: "U9MN9J48117ABB7I594GF9FKW85IQJGA72",
+    }
   }
 };

@@ -24,11 +24,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     zap = await ethers.getContract(name);
     let zapParams = {
-        slippageBps: 100,
+        inchRouter: "0x111111125421cA6dc452d289314280a0f8842A65",
+        binSearchIterations: 20,
         remainingLiquidityThreshold: 1
     };
     let protocolParams = {
-        npm: "0x0"
+        npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
+        eid: 42161
     };
     
     await (await zap.setZapParams(zapParams)).wait();

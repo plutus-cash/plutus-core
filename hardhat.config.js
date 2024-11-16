@@ -46,6 +46,13 @@ module.exports = {
       chainId: 42161,
       accounts: [process.env.PK]
     }
+  },
+  etherscan: {
+    apiKey: {
+        mainnet: "YOUR_ETHERSCAN_API_KEY",
+        optimisticEthereum: "YOUR_OPTIMISTIC_ETHERSCAN_API_KEY",
+        arbitrum: "U9MN9J48117ABB7I594GF9FKW85IQJGA72",
+    }
   }
 };
 

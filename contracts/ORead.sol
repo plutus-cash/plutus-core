@@ -2,10 +2,11 @@
 
 pragma solidity ^0.8.22;
 
+import { Modifiers } from "./interfaces/Modifiers.sol";
+import "./interfaces/IMasterFacet.sol";
 import "./interfaces/core/IProportionFacet.sol";
-import "./interfaces/core/IOReadFacet.sol";
 
-contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
+contract ORead is IOReadFacet, OAppRead, OAppOptionsType3, Modifiers {
 
     uint8 internal constant MAP_ONLY = 0;
     uint8 internal constant REDUCE_ONLY = 1;
@@ -19,7 +20,6 @@ contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
 
     uint256 public amount1;
     uint256 public amount2;
-
 
     constructor(
         address _endpoint,
@@ -40,7 +40,7 @@ contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
 
     bytes public data = abi.encode("Nothing received yet.");
 
-    function getProportion(uint32 _eid, address _pool, int24[] memory tickRange, bytes calldata _extraOptions) public payable returns (MessagingReceipt memory receipt) {
+    function getProportionLZ(uint32 _eid, address _pool, int24[] memory tickRange, bytes calldata _extraOptions) public payable returns (MessagingReceipt memory receipt) {
 
         bytes memory cmd = getCmdData(_eid, _pool, tickRange);
         return
@@ -57,10 +57,10 @@ contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
         EVMCallRequestV1[] memory readRequests = new EVMCallRequestV1[](1);
         
         ChainConfig memory config = chainConfigs[targetEid];
-        
-        bytes memory callData = abi.encodeWithSelector(IProportionFacet.getProportion.selector, _pool, tickRange, targetEid);
+
+        bytes memory callData = abi.encodeWithSelector(IProportionFacet.getProportion.selector, _pool, tickRange);
         readRequests[0] = EVMCallRequestV1({
-            appRequestLabel: uint16(1),
+            appRequestLabel: uint16(block.timestamp),
             targetEid: targetEid,
             isBlockNum: false,
             blockNumOrTimestamp: uint64(block.timestamp),
@@ -97,7 +97,6 @@ contract MyOAppRead is IOReadFacet, OAppRead, OAppOptionsType3 {
         bytes calldata
     ) internal override {
         require(_message.length == 32, "Invalid message length");
-        (amount1, amount2) = abi.decode(_message, (uint256, uint256));
-        
+        (amount1, amount2) = abi.decode(_message, (uint256, uint256));   
     }
 }

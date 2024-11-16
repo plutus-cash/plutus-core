@@ -199,7 +199,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
         return IUniswapV3Pool(pair).tickSpacing();
     }
 
-    function getPoolTick(address pair) external onlyDiamond view returns (int24 tick) {
+    function getPoolTick(address pair) external view returns (int24 tick) {
         (, tick,,,,,) = IUniswapV3Pool(pair).slot0();
     }
 

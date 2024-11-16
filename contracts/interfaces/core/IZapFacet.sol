@@ -73,7 +73,7 @@ interface IZapFacet {
     struct SwapData {
         InputToken[] inputs;
         OutputToken[] outputs;
-        bytes[] data;
+        bytes data;
     }
 
     /// @notice Parameters for zapping in

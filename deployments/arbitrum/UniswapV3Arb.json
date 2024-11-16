@@ -1220,7 +1220,7 @@
               ]
             },
             {
-              "type": "bytes[]",
+              "type": "bytes",
               "name": "data"
             }
           ]

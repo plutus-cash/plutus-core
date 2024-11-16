@@ -34,7 +34,7 @@ module.exports = {
       forking: {
           url: ARB_NODE_URI,
           blockNumber: BLOCK_NUMBER,
-      },  
+      },
     },
     base: {
       url: BASE_NODE_URI,
@@ -55,5 +55,8 @@ module.exports = {
         optimisticEthereum: "YOUR_OPTIMISTIC_ETHERSCAN_API_KEY",
         arbitrum: "U9MN9J48117ABB7I594GF9FKW85IQJGA72",
     }
+  },
+  mocha: {
+    timeout: 100000000
   }
 };

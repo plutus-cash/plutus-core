@@ -25,7 +25,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     zap = await ethers.getContract(name);
     let zapParams = {
-        inchRouter: "0x111111125421cA6dc452d289314280a0f8842A65"
+        inchRouter: "0xa669e7A0d4b3e4Fa48af2dE86BD4CD7126Be4e13"
     };
     let protocolParams = {
         npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",

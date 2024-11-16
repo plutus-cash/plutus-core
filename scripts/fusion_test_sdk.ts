@@ -85,10 +85,10 @@ async function main(): Promise<void> {
                 console.log({idx}, 'shared secret');
             }  
         }  
-  
+
         // check if order finished  
         const {status} = await sdk.getOrderStatus(hash);
-  
+
         if (
             status === OrderStatus.Executed ||  
             status === OrderStatus.Expired ||  
@@ -96,12 +96,12 @@ async function main(): Promise<void> {
         ) {  
             break;
         }  
-  
+
         await sleep(1000);
     }
-  
+
     const statusResponse = await sdk.getOrderStatus(hash);
     console.log(statusResponse);
-}  
-  
+}
+
 main();

@@ -7,24 +7,56 @@ pragma solidity >=0.8.0;
 interface IZapFacet {
 
     /// @notice Structure for zap storage
-    /// @param odosRouter The address of the odos router
-    /// @param slippageBps The slippage basis points
+    /// @param inchRouter The address of the 1inch router
     /// @param binSearchIterations The number of iterations for the secondary swap bin search
     /// @param remainingLiquidityThreshold The remaining liquidity threshold, if sum of token0 and token1 after first increase is more than this, the swap will be adjusted
     struct ZapStorage {
-        address odosRouter;
-        uint256 slippageBps;
+        address inchRouter;
         uint256 binSearchIterations;
         uint256 remainingLiquidityThreshold;
     }
 
-    /// @notice Sets the zap parameters
-    /// @param args The zap storage parameters
-    function setZapParams(ZapStorage memory args) external;
+    /// @notice Emitted after swap
+    /// @param tokens Array of input token addresses
+    /// @param amounts Array of input token amounts
+    event InputTokens(address[] tokens, uint256[] amounts);
 
-    /// @notice Gets the slippage basis points
-    /// @return The slippage basis points
-    function slippageBps() external view returns (uint256);
+    /// @notice Emitted after swap
+    /// @param tokens Array of output token addresses
+    /// @param amounts Array of output token amounts
+    event OutputTokens(address[] tokens, uint256[] amounts);
+
+    /// @notice Emitted with the result of a zap operation
+    /// @param tokens Array of pool token addresses
+    /// @param initialAmounts Amounts of tokens after swap
+    /// @param putAmounts Amounts of tokens put into the pool
+    /// @param returnedAmounts Amounts of tokens returned to the user
+    event ZapResult(
+        address[] tokens, 
+        uint256[] initialAmounts, 
+        uint256[] putAmounts, 
+        uint256[] returnedAmounts
+    );
+
+    /// @notice Emitted when a new token ID is generated
+    /// @param tokenId The ID of the token
+    event TokenId(uint256 tokenId);
+
+    /// @notice Error thrown with the simulation result of a zap operation
+    /// @param tokens Array of pool token addresses
+    /// @param initialAmounts Amounts of tokens after swap
+    /// @param putAmounts Amounts of tokens put into the pool
+    /// @param returnedAmounts Amounts of tokens returned to the user
+    /// @param amountToSwap Amount of tokens needed to be swapped secondarily
+    /// @param swapSide Flag indicating if swap token0 to token1 or vice versa
+    error SimulationResult(
+        address[] tokens, 
+        uint256[] initialAmounts, 
+        uint256[] putAmounts, 
+        uint256[] returnedAmounts,
+        uint256 amountToSwap,
+        bool swapSide
+    );
 
     /// @notice Structure for input token information
     /// @param tokenAddress The address of the input token
@@ -45,13 +77,29 @@ interface IZapFacet {
     /// @notice Structure containing swap data
     /// @param inputs An array of input tokens
     /// @param outputs An array of output tokens
-    /// @param data Odos router data
+    /// @param data router data
     struct SwapData {
         InputToken[] inputs;
         OutputToken[] outputs;
-        bytes data;
+        bytes[] data;
     }
 
+    /// @notice Parameters for zapping in
+    /// @param pool The address of the liquidity pool
+    /// @param tickRange An array of tick ranges for the position
+    /// @param amountsOut An array of token amounts come directly from the user
+    /// @param isSimulation A flag indicating whether this is a zap simulation
+    /// @param adjustSwapSide Flag indicating if swap token0 to token1 or vice versa
+    /// @param adjustSwapAmount The amount of secondary swap
+    struct ZapInParams {
+        address pool;
+        int24[] tickRange;
+        uint256[] amountsOut;
+
+        bool isSimulation;
+        bool adjustSwapSide;
+        uint256 adjustSwapAmount;
+    }
 
     /// @notice Zaps in to a liquidity position
     /// @param swapData The swap data for the zap

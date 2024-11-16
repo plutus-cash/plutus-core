@@ -39,13 +39,14 @@ module.exports = {
     base: {
       url: BASE_NODE_URI,
       chainId: 8453,
-      accounts: [process.env.PK]
+      accounts: [process.env.PK],
+      gasPrice: "auto"
     },
     arbitrum: {
       url: ARB_NODE_URI,
       chainId: 42161,
-      accounts: [process.env.PK]
+      accounts: [process.env.PK],
+      gasPrice: "auto"
     }
   }
 };
-

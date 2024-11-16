@@ -133,7 +133,7 @@ contract ZapFacet is IZapFacet, Modifiers {
         IMasterFacet(address(this)).closePosition(tokenId, recipient, feeRecipient);
     }
 
-    function validateInputs(SwapData memory swapData, ZapInParams memory paramsData) internal view {
+    function validateInputs(SwapData memory swapData, ZapInParams memory paramsData) internal pure {
         for (uint256 i = 0; i < swapData.inputs.length; i++) {
             for (uint256 j = 0; j < i; j++) {
                 require(

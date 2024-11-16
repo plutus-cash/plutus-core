@@ -59,11 +59,11 @@ contract MathFacet is IMathFacet, Modifiers {
         }
     }
 
-    function _getSqrtRatioByPrice(uint256 price, uint256 decimals) internal view returns (uint160) {
+    function _getSqrtRatioByPrice(uint256 price, uint256 decimals) internal pure returns (uint160) {
         return SafeCast.toUint160(_sqrt(FullMath.mulDiv(price, 2 ** 192, decimals))); // NOTE: decimals = 10 ** x
     }
 
-    function _getPriceBySqrtRatio(uint160 sqrtRatio, uint256 decimals) internal view returns (uint256) {
+    function _getPriceBySqrtRatio(uint160 sqrtRatio, uint256 decimals) internal pure returns (uint256) {
         return FullMath.mulDiv(uint256(sqrtRatio), uint256(sqrtRatio) * decimals, 2 ** 192);
     }
 

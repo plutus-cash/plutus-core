@@ -2,7 +2,7 @@ const { ethers } = require("hardhat");
 const hre = require("hardhat");
 const { deployDiamond, deployFacets, prepareCut, updateFacets, updateAbi } = require("../util");
 
-const name = 'UniswapV3Base';
+const name = 'UniswapV3Arb';
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     // await transferETH(0.00001, "0x0000000000000000000000000000000000000000");
@@ -13,7 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const facetNames = [
         'AccessControlFacet',
         'UniswapV3Facet',
-        'OReadFacet',
+        // 'OReadFacet',
         'MathFacet',
         'ProportionFacet',
         'ZapFacet'

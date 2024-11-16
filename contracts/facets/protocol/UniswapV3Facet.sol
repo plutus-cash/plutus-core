@@ -26,7 +26,7 @@ contract UniswapV3Facet is IProtocolFacet, Modifiers {
 
     function setProtocolParams(ProtocolStorage memory args) external onlyAdmin {
         require(args.npm != address(0), 'npm is empty');
-        require(args.npm != 0, 'eid is empty');
+        require(args.eid != 0, 'eid is empty');
         protocolStorage().npm = args.npm;
         protocolStorage().eid = args.eid;
     }

@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
-const { deployDiamond, deployFacets, prepareCut, updateFacets, updateAbi } = require("../util");
+const { deployDiamond, deployFacets, prepareCut, updateFacets, updateAbi } = require("../ignition/modules/util");
 
 const name = 'UniswapV3Arb';
 

@@ -1,9 +1,10 @@
 require('hardhat-deploy');
 require("@nomiclabs/hardhat-waffle");
-const dotenv = require('dotenv');
+const dotenv = require('dotenv/config');
 
-export const ETH_NODE_URI="https://rpc.ankr.com/eth"
-export const BASE_NODE_URI="https://rpc.ankr.com/base"
+const ETH_NODE_URI="https://rpc.ankr.com/eth"
+const BASE_NODE_URI="https://rpc.ankr.com/base"
+BLOCK_NUMBER = 1
 
 module.exports = {
   namedAccounts: {

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "../../interfaces/IMasterFacet.sol";
+import "hardhat/console.sol";
 
 contract ZapFacet is IZapFacet, Modifiers {
 
@@ -87,7 +88,6 @@ contract ZapFacet is IZapFacet, Modifiers {
             (positionAmounts[0], positionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
         }
         tokenId = manageLiquidity(paramsData, poolTokens, tokenId);
-        adjustSwap(paramsData, poolTokens, tokenId);
         (newPositionAmounts[0], newPositionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
 
         for (uint256 i = 0; i < 2; i++) {
@@ -131,9 +131,11 @@ contract ZapFacet is IZapFacet, Modifiers {
     }
 
     function swap1Inch(SwapData memory swapData) internal {
-        for (uint256 i = 0; i < swapData.data.length; i++) {
-            (bool success,) = zapStorage().inchRouter.call{value : 0}(swapData.data[i]);
+        if (swapData.inputs.length > 0) {
+        // for (uint256 i = 0; i < swapData.data.length; i++) {
+            (bool success,) = zapStorage().inchRouter.call{value : 0}(swapData.data);
             require(success, "router swap invalid");
+        // }
         }
 
         {
@@ -174,18 +176,5 @@ contract ZapFacet is IZapFacet, Modifiers {
             IMasterFacet(address(this)).increaseLiquidity(tokenId, poolTokens.amount[0], poolTokens.amount[1]);
         }
         return tokenId;
-    }
-
-    function adjustSwap(
-        ZapInParams memory paramsData,
-        PoolTokens memory poolTokens,
-        uint256 tokenId
-    ) internal {
-        paramsData.amountsOut[0] = poolTokens.asset[0].balanceOf(address(this));
-        paramsData.amountsOut[1] = poolTokens.asset[1].balanceOf(address(this));
-        poolTokens.asset[0].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[0]);
-        poolTokens.asset[1].approve(IProtocolFacet(address(this)).npm(), paramsData.amountsOut[1]);
-
-        IMasterFacet(address(this)).increaseLiquidity(tokenId, paramsData.amountsOut[0], paramsData.amountsOut[1]);
     }
 }

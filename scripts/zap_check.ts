@@ -97,20 +97,19 @@ async function main(): Promise<void> {
     };
 
     console.log("proportions", proportions);
-    let requests = [];
+    let requests: any;
     if (!proportions.inputToken && proportions.outputTokens.length === 0) {
         requests = [{
             "outAmount": "0",
             "data": "0x"
         }];
     } else {
-        requests = await get1InchRequest(
+        requests = await getOdosRequest(
             {
                 'inputToken': proportions.inputToken,
                 'outputTokens': proportions.outputTokens
             }, 
-            zap.address, 
-            account.address
+            zap.address
         );
     }
     console.log(requests);
@@ -122,9 +121,9 @@ async function main(): Promise<void> {
         }],
         outputs: proportions.outputTokens.map((e: any, i: number) => ({
             'tokenAddress': e.tokenAddress,
-            'amountMin': new BN(requests[i].outAmount).muln(0.99).toString()
+            'amountMin': 1
         })),
-        data: requests.map((e: any) => e.data)
+        data: requests.request.data
     };
 
     let paramsData = {
@@ -140,8 +139,9 @@ async function main(): Promise<void> {
         await (await inputTokensERC20Arr[i].approve(zap.address, (new BN(10).pow(new BN(64))).toString())).wait();
     }
 
-    const zapResult = await (await zap.connect(account).zapIn(swapData, paramsData, { gasLimit: 100000 })).wait();
+    const zapResult = await (await zap.connect(account).zapIn(swapData, paramsData)).wait();
     console.log("zapResult:", zapResult);
+    console.log("done!!");
 }
 
 async function get1InchRequest(params: any, zapAddress: string, walletAddress: string) {
@@ -156,7 +156,7 @@ async function get1InchRequest(params: any, zapAddress: string, walletAddress: s
             params: {
                 "src": params.inputToken.tokenAddress,
                 "dst": params.outputTokens[i].tokenAddress,
-                "amount": new BN(params.inputToken.amount).muln(Number(params.outputTokens[i].proportion)).toString(),
+                "amount": new BN(params.inputToken.amount).muln(Number(params.outputTokens[i].proportion) * 0.95).toString(),
                 "from": zapAddress,
                 "origin": walletAddress,
                 "slippage": 1,
@@ -181,6 +181,49 @@ async function get1InchRequest(params: any, zapAddress: string, walletAddress: s
     }
     // console.log("requests:", requests);
     return requests;
+}
+
+async function getOdosRequest(params: any, zapAddress: string) {
+    let swapParams = {
+        'chainId': `${process.env.CHAIN_ID}`,
+        'gasPrice': 1,
+        'inputTokens': [params.inputToken],
+        'outputTokens': params.outputTokens,
+        'userAddr': zapAddress,
+        'slippageLimitPercent': 1,
+        'sourceWhitelist': [],
+        'simulate': false,
+        'pathViz': false,
+        'disableRFQs': false,
+    };
+
+    const urlQuote = 'https://api.odos.xyz/sor/quote/v2';
+    const urlAssemble = 'https://api.odos.xyz/sor/assemble';
+    let transaction: any;
+    let outAmounts;
+
+    let quotaResponse = (await axios.post(urlQuote, swapParams, { headers: { 'Accept-Encoding': 'br' } }));
+    outAmounts = quotaResponse.data.outAmounts;
+    let assembleData = {
+        'userAddr': zapAddress,
+        'pathId': quotaResponse.data.pathId,
+        'simulate': true,
+    };
+    transaction = (await axios.post(urlAssemble, assembleData, { headers: { 'Accept-Encoding': 'br' } }));
+
+    if (transaction.statusCode === 400) {
+        throw new Error(`[zap] ${transaction.description}`);
+    }
+
+    if (transaction.data.transaction === undefined) {
+        throw new Error('[zap] transaction.tx is undefined');
+    }
+
+    console.log('Success get data from Odos!');
+    return {
+        "request": transaction.data.transaction,
+        "outAmounts": outAmounts
+    };
 }
 
 main();

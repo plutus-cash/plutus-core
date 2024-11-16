@@ -56,7 +56,6 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer, Modifie
         
         address memory params = _pool;
 
-        
         bytes memory callData = abi.encodeWithSelector(IMasterFacet.getPoolData.selector, params);
         readRequest = EVMCallRequestV1({
             appRequestLabel: uint16(1),
@@ -96,25 +95,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer, Modifie
         bytes calldata
     ) internal override {
         require(_message.length == 32, "Invalid message length");
-        uint256 averagePrice = abi.decode(_message, (uint256));
-        emit AggregatedPrice(averagePrice);
-    }
-
-    function lzMap(bytes calldata, bytes calldata _response) external pure returns (bytes memory) {
-        require(_response.length >= 32, "Invalid response length"); // quoteExactInputSingle returns multiple values
-
-        // Decode the response to extract amountOut
-        // (, , , , ) = abi.decode(_response, (address, address, uint160, int24, int24));
-        return abi.encode(amountOut);
-    }
-
-    function lzReduce(bytes calldata _cmd, bytes[] calldata _responses) external pure returns (bytes memory) {
-        uint16 appLabel = ReadCodecV1.decodeCmdAppLabel(_cmd);
-        bytes memory concatenatedResponses;
-
-        for (uint256 i = 0; i < _responses.length; i++) {
-            concatenatedResponses = abi.encodePacked(concatenatedResponses, _responses[i]);
-        }
-        return abi.encodePacked(concatenatedResponses, "_reduced_appLabel:", appLabel);
+        // uint256 averagePrice = abi.decode(_message, (uint256));
+        
     }
 }

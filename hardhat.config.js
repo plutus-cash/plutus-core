@@ -6,7 +6,7 @@ const ETH_NODE_URI="https://rpc.ankr.com/eth";
 const BASE_NODE_URI="https://rpc.ankr.com/base";
 const OP_NODE_URI="https://rpc.ankr.com/optimism";
 const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
-const BLOCK_NUMBER = 1;
+const BLOCK_NUMBER = 275188482;
 
 module.exports = {
   namedAccounts: {
@@ -32,7 +32,7 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-          url: BASE_NODE_URI,
+          url: ARB_NODE_URI,
           blockNumber: BLOCK_NUMBER,
       },  
     },

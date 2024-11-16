@@ -2,9 +2,11 @@ require('hardhat-deploy');
 require("@nomiclabs/hardhat-waffle");
 const dotenv = require('dotenv/config');
 
-const ETH_NODE_URI="https://rpc.ankr.com/eth"
-const BASE_NODE_URI="https://rpc.ankr.com/base"
-BLOCK_NUMBER = 1
+const ETH_NODE_URI="https://rpc.ankr.com/eth";
+const BASE_NODE_URI="https://rpc.ankr.com/base";
+const OP_NODE_URI="https://rpc.ankr.com/optimism";
+const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
+const BLOCK_NUMBER = 1;
 
 module.exports = {
   namedAccounts: {
@@ -37,6 +39,11 @@ module.exports = {
     base: {
       url: BASE_NODE_URI,
       chainId: 8453,
+      accounts: [process.env.PK]
+    },
+    arbitrum: {
+      url: ARB_NODE_URI,
+      chainId: 42161,
       accounts: [process.env.PK]
     }
   }

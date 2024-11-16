@@ -69,6 +69,11 @@ async function mergeABIFacets(facets) {
     return mergeABIs([primaryABI]);
 }
 
+async function getCurrentFacets(address) {
+    let contract = await ethers.getContractAt(require('./abi/DIAMOND_LOUPLE.json'), address);
+    return await contract.facets();
+}
+
 async function prepareCut(facetNames, address) {
     console.log(`Prepare cut for Diamond: ${address} ...`);
 
@@ -158,6 +163,25 @@ async function prepareCut(facetNames, address) {
     } else {
         return convertToCut(facetCuts);
     }
+}
+
+function getFunctionNameBySelector(facetFactories, selector) {
+    for (const facetFactory of facetFactories) {
+        for (const [key, value] of Object.entries(facetFactory.interface.functions)) {
+            let sighash = facetFactory.interface.getSighash(value.name);
+            if (sighash === selector) {
+                return value.name;
+            }
+        }
+    }
+    return '-';
+}
+
+function convertToCut(facetCuts) {
+    for (let facetCut of facetCuts) {
+        facetCut.functionSelectors = [facetCut.functionSelectors];
+    }
+    return facetCuts;
 }
 
 async function updateAbi(name, contract, facetsNames) {

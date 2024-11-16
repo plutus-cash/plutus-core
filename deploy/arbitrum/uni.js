@@ -10,32 +10,32 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deployer } = await getNamedAccounts();
     console.log('deployer', deployer);
     let zap = await deployDiamond(name, deployer);
-    // const facetNames = [
-    //     'AccessControlFacet',
-    //     'UniswapV3Facet',
-    //     'MathFacet',
-    //     'ProportionFacet',
-    //     'ZapFacet'
-    // ];
+    const facetNames = [
+        'AccessControlFacet',
+        'UniswapV3Facet',
+        'MathFacet',
+        'ProportionFacet',
+        'ZapFacet'
+    ];
     // await deployFacets(facetNames, deployer);
-    // const cut = await prepareCut(facetNames, zap.address, deployer);
-    // await updateFacets(cut, zap.address);
-    // await updateAbi(name, zap, facetNames);
+    const cut = await prepareCut(facetNames, zap.address, deployer);
+    await updateFacets(cut, zap.address);
+    await updateAbi(name, zap, facetNames);
 
-    // zap = await ethers.getContract(name);
-    // let zapParams = {
-    //     inchRouter: "0x111111125421cA6dc452d289314280a0f8842A65",
-    //     binSearchIterations: 20,
-    //     remainingLiquidityThreshold: 1
-    // };
-    // let protocolParams = {
-    //     npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
-    //     eid: 42161
-    // };
+    zap = await ethers.getContract(name);
+    let zapParams = {
+        inchRouter: "0x111111125421cA6dc452d289314280a0f8842A65",
+        binSearchIterations: 20,
+        remainingLiquidityThreshold: 1
+    };
+    let protocolParams = {
+        npm: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
+        eid: 42161
+    };
     
-    // await (await zap.setZapParams(zapParams)).wait();
-    // await (await zap.setProtocolParams(protocolParams)).wait();
-    // console.log('setParams done()');
+    await (await zap.setZapParams(zapParams)).wait();
+    await (await zap.setProtocolParams(protocolParams)).wait();
+    console.log('setParams done()');
 };
 
 module.exports.tags = [name];

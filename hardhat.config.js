@@ -4,6 +4,7 @@ const dotenv = require('dotenv/config');
 
 const ETH_NODE_URI="https://rpc.ankr.com/eth";
 const BASE_NODE_URI="https://rpc.ankr.com/base";
+const SCR_NODE_URI="https://rpc.ankr.com/scroll";
 const OP_NODE_URI="https://rpc.ankr.com/optimism";
 const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
 const BLOCK_NUMBER = 275188482;
@@ -45,6 +46,12 @@ module.exports = {
     arbitrum: {
       url: ARB_NODE_URI,
       chainId: 42161,
+      accounts: [process.env.PK],
+      gasPrice: "auto"
+    },
+    scroll: {
+      url: SCR_NODE_URI,
+      chainId: 534352,
       accounts: [process.env.PK],
       gasPrice: "auto"
     }

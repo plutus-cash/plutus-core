@@ -14,18 +14,26 @@ import "../../interfaces/IMasterFacet.sol";
 contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
 
     mapping(uint32 => ChainConfig) public chainConfigs;
+    uint32 public READ_CHANNEL;
+
 
     constructor(
-        address _endpoint
+        address _endpoint,
+        uint32 _readChannel
     ) OAppRead(_endpoint, msg.sender) {
-        
+        READ_CHANNEL = _readChannel;
+        _setPeer(READ_CHANNEL, AddressCast.toBytes32(address(this)));
     }
 
     function addChain(uint32 eid, ChainConfig memory chainConfig) external onlyAdmin {
         chainConfigs[eid] = chainConfig;
     }
 
-    string public identifier;
+    function setReadChannel(uint32 _channelId, bool _active) public override onlyAdmin {
+        _setPeer(_channelId, _active ? AddressCast.toBytes32(address(this)) : bytes32(0));
+        READ_CHANNEL = _channelId;
+    }
+
     bytes public data = abi.encode("Nothing received yet.");
 
     function getPoolData(uint32 _eid, address _pool) onlyDiamond {
@@ -78,94 +86,6 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         return _quote(READ_CHANNEL, cmd, combineOptions(READ_CHANNEL, READ_MSG_TYPE, _extraOptions), false);
     }
 
-
-    /**
-     * @notice Send a read command in loopback through channelId
-     * @param _channelId Read Channel ID to be used for the message.
-     * @param _appLabel The application label to use for the message.
-     * @param _requests An array of `EvmReadRequest` structs containing the read requests to be made.
-     * @param _computeRequest A `EvmComputeRequest` struct containing the compute request to be made.
-     * @param _options Message execution options (e.g., for sending gas to destination).
-     * @dev Encodes the message as bytes and sends it using the `_lzSend` internal function.
-     * @return receipt A `MessagingReceipt` struct containing details of the message sent.
-     */
-    function send(
-        uint32 _channelId,
-        uint16 _appLabel,
-        EvmReadRequest[] memory _requests,
-        EvmComputeRequest memory _computeRequest,
-        bytes calldata _options
-    ) external payable returns (MessagingReceipt memory receipt) {
-        bytes memory cmd = buildCmd(_appLabel, _requests, _computeRequest);
-        receipt = _lzSend(_channelId, cmd, _options, MessagingFee(msg.value, 0), payable(msg.sender));
-    }
-
-    /**
-     * @notice Quotes the gas needed to pay for the full read command in native gas or ZRO token.
-     * @param _channelId Read Channel ID to be used for the message.
-     * @param _appLabel The application label to use for the message.
-     * @param _requests An array of `EvmReadRequest` structs containing the read requests to be made.
-     * @param _computeRequest A `EvmComputeRequest` struct containing the compute request to be made.
-     * @param _options Message execution options (e.g., for sending gas to destination).
-     * @param _payInLzToken Whether to return fee in ZRO token.
-     * @return fee A `MessagingFee` struct containing the calculated gas fee in either the native token or ZRO token.
-     */
-    function quote(
-        uint32 _channelId,
-        uint16 _appLabel,
-        EvmReadRequest[] memory _requests,
-        EvmComputeRequest memory _computeRequest,
-        bytes calldata _options,
-        bool _payInLzToken
-    ) public view returns (MessagingFee memory fee) {
-        bytes memory cmd = buildCmd(_appLabel, _requests, _computeRequest);
-        fee = _quote(_channelId, cmd, _options, _payInLzToken);
-    }
-
-    /**
-     * @notice Builds the command to be sent
-     * @param appLabel The application label to use for the message.
-     * @param _readRequests An array of `EvmReadRequest` structs containing the read requests to be made.
-     * @param _computeRequest A `EvmComputeRequest` struct containing the compute request to be made.
-     * @return cmd The encoded command to be sent to to the channel.
-     */
-    function buildCmd(
-        uint16 appLabel,
-        EvmReadRequest[] memory _readRequests,
-        EvmComputeRequest memory _computeRequest
-    ) public pure returns (bytes memory) {
-        require(_readRequests.length > 0, "LzReadCounter: empty requests");
-        // build read requests
-        EVMCallRequestV1[] memory readRequests = new EVMCallRequestV1[](_readRequests.length);
-
-        bytes memory callData = abi.encodeWithSelector(bytes4, arg);
-        
-        for (uint256 i = 0; i < _readRequests.length; i++) {
-            EvmReadRequest memory req = _readRequests[i];
-            readRequests[i] = EVMCallRequestV1({
-                appRequestLabel: req.appRequestLabel,
-                targetEid: req.targetEid,
-                isBlockNum: req.isBlockNum,
-                blockNumOrTimestamp: req.blockNumOrTimestamp,
-                confirmations: req.confirmations,
-                to: req.to,
-                callData: callData
-            });
-        }
-
-        require(_computeRequest.computeSetting <= COMPUTE_SETTING_NONE, "LzReadCounter: invalid compute type");
-        EVMCallComputeV1 memory evmCompute = EVMCallComputeV1({
-            computeSetting: _computeRequest.computeSetting,
-            targetEid: _computeRequest.computeSetting == COMPUTE_SETTING_NONE ? 0 : _computeRequest.targetEid,
-            isBlockNum: _computeRequest.isBlockNum,
-            blockNumOrTimestamp: _computeRequest.blockNumOrTimestamp,
-            confirmations: _computeRequest.confirmations,
-            to: _computeRequest.to
-        });
-        bytes memory cmd = ReadCodecV1.encode(appLabel, readRequests, evmCompute);
-
-        return cmd;
-    }
 
     function _lzReceive(
         Origin calldata,

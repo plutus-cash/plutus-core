@@ -2,6 +2,12 @@
 pragma solidity >=0.8.0;
 
 interface IOReadFacet {
+
+    uint8 internal constant MAP_ONLY = 0;
+    uint8 internal constant REDUCE_ONLY = 1;
+    uint8 internal constant MAP_AND_REDUCE = 2;
+    uint8 internal constant NONE = 3;
+
     struct EvmReadRequest {
         uint16 appRequestLabel;
         uint32 targetEid;
@@ -25,6 +31,8 @@ interface IOReadFacet {
         address zapAddress; // Address of the zap contract
         // address poolAddress; // Address of the pool contract
     }
+
+    function getPoolData(uint32 _eid, address _pool) external;
 
     
 }

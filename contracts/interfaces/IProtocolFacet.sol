@@ -13,6 +13,7 @@ interface IProtocolFacet {
     /// @param npm The address of the non-fungible position manager
     struct ProtocolStorage {
         address npm;
+        uint32 eid;
     }
 
     struct PoolData {
@@ -29,6 +30,9 @@ interface IProtocolFacet {
 
     /// @notice Gets the npm address
     function npm() external view returns (address);
+
+    /// @notice Gets the eid
+    function eid() external view returns (uint32);
 
     function getPoolData(address pair) external view returns (PoolData memory);
 

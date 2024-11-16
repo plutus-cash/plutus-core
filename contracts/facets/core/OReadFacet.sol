@@ -13,11 +13,6 @@ import "../../interfaces/IMasterFacet.sol";
 
 contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
 
-    uint8 internal constant COMPUTE_SETTING_MAP_ONLY = 0;
-    uint8 internal constant COMPUTE_SETTING_REDUCE_ONLY = 1;
-    uint8 internal constant COMPUTE_SETTING_MAP_REDUCE = 2;
-    uint8 internal constant COMPUTE_SETTING_NONE = 3;
-
     mapping(uint32 => ChainConfig) public chainConfigs;
 
     constructor(
@@ -34,7 +29,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
     bytes public data = abi.encode("Nothing received yet.");
 
     function getPoolData(uint32 _eid, address _pool) onlyDiamond {
-        bytes memory cmd = getCmd(_eid, _pool);
+        bytes memory cmd = getCmdData(_eid, _pool);
         return
             _lzSend(
                 READ_CHANNEL,
@@ -45,7 +40,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
             );
     }
 
-    function getCmd(uint32 targetEid, address _pool) public view returns (bytes memory) {
+    function getCmdData(uint32 targetEid, address _pool) public view returns (bytes memory) {
         EVMCallRequestV1 memory readRequest;
         
         ChainConfig memory config = chainConfigs[targetEid];
@@ -55,7 +50,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         
         bytes memory callData = abi.encodeWithSelector(IMasterFacet.getPoolData.selector, params);
         readRequest = EVMCallRequestV1({
-            appRequestLabel: uint16(i + 1),
+            appRequestLabel: uint16(1),
             targetEid: targetEid,
             isBlockNum: false,
             blockNumOrTimestamp: uint64(block.timestamp),
@@ -66,7 +61,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         
 
         EVMCallComputeV1 memory computeSettings = EVMCallComputeV1({
-            computeSetting: 2, // lzMap() and lzReduce()
+            computeSetting: NONE, // lzMap() and lzReduce()
             targetEid: ILayerZeroEndpointV2(endpoint).eid(),
             isBlockNum: false,
             blockNumOrTimestamp: uint64(block.timestamp),
@@ -75,6 +70,12 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         });
 
         return ReadCodecV1.encode(0, readRequest, computeSettings);
+    }
+
+    // hardcode NOT to pay in ZRO
+    function quoteCmdData(bytes calldata _extraOptions) external view returns (MessagingFee memory fee) {
+        bytes memory cmd = getCmd();
+        return _quote(READ_CHANNEL, cmd, combineOptions(READ_CHANNEL, READ_MSG_TYPE, _extraOptions), false);
     }
 
 
@@ -148,7 +149,7 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
                 blockNumOrTimestamp: req.blockNumOrTimestamp,
                 confirmations: req.confirmations,
                 to: req.to,
-                callData: abi.encodeWithSelector(this.myInformation.selector)
+                callData: callData
             });
         }
 
@@ -166,35 +167,24 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
         return cmd;
     }
 
-    /**
-     * @dev Internal function override to handle incoming messages from another chain.
-     * @param payload The encoded message payload being received. This is the resolved command from the DVN
-     *
-     * @dev The following params are unused in the current implementation of the OApp.
-     * @dev _origin A struct containing information about the message sender.
-     * @dev _guid A unique global packet identifier for the message.
-     * @dev _executor The address of the Executor responsible for processing the message.
-     * @dev _extraData Arbitrary data appended by the Executor to the message.
-     *
-     * Decodes the received payload and processes it as per the business logic defined in the function.
-     */
     function _lzReceive(
-        Origin calldata /*_origin*/,
+        Origin calldata,
         bytes32 /*_guid*/,
-        bytes calldata payload,
-        address /*_executor*/,
-        bytes calldata /*_extraData*/
+        bytes calldata _message,
+        address,
+        bytes calldata
     ) internal override {
-        data = payload;
+        require(_message.length == 32, "Invalid message length");
+        uint256 averagePrice = abi.decode(_message, (uint256));
+        emit AggregatedPrice(averagePrice);
     }
 
-    function myInformation() public view returns (bytes memory) {
-        return abi.encodePacked("_id:", identifier, "_blockNumber:", block.number);
-    }
+    function lzMap(bytes calldata, bytes calldata _response) external pure returns (bytes memory) {
+        require(_response.length >= 32, "Invalid response length"); // quoteExactInputSingle returns multiple values
 
-    function lzMap(bytes calldata _request, bytes calldata _response) external pure returns (bytes memory) {
-        uint16 requestLabel = ReadCodecV1.decodeRequestV1AppRequestLabel(_request);
-        return abi.encodePacked(_response, "_mapped_requestLabel:", requestLabel);
+        // Decode the response to extract amountOut
+        (, , , , ) = abi.decode(_response, (address, address, uint160, int24, int24));
+        return abi.encode(amountOut);
     }
 
     function lzReduce(bytes calldata _cmd, bytes[] calldata _responses) external pure returns (bytes memory) {

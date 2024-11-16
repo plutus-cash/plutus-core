@@ -78,7 +78,7 @@ contract ZapFacet is IZapFacet, Modifiers {
             put: new uint256[](2),
             returned: new uint256[](2)
         });
-        (poolTokens.token[0], poolTokens.token[1]) = IMasterFacet(address(this)).getPoolTokens(paramsData.pool, IProtocolFacet(address(this)).eid());
+        (poolTokens.token[0], poolTokens.token[1]) = IMasterFacet(address(this)).getPoolTokens(paramsData.pool);
         tokenAmounts.tokens = poolTokens.token;
         for (uint256 i = 0; i < 2; i++) {
             poolTokens.asset[i] = IERC20(poolTokens.token[i]);
@@ -92,11 +92,11 @@ contract ZapFacet is IZapFacet, Modifiers {
         uint256[] memory positionAmounts = new uint256[](2);
         uint256[] memory newPositionAmounts = new uint256[](2);
         if (tokenId != 0) {
-            (positionAmounts[0], positionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId, IProtocolFacet(address(this)).eid());
+            (positionAmounts[0], positionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
         }
         tokenId = manageLiquidity(paramsData, poolTokens, tokenId);
         adjustSwap(paramsData, poolTokens, tokenId);
-        (newPositionAmounts[0], newPositionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId, IProtocolFacet(address(this)).eid());
+        (newPositionAmounts[0], newPositionAmounts[1]) = IMasterFacet(address(this)).getPositionAmounts(tokenId);
 
         for (uint256 i = 0; i < 2; i++) {
             if (newPositionAmounts[i] > positionAmounts[i]) {

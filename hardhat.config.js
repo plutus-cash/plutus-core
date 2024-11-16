@@ -7,6 +7,8 @@ const BASE_NODE_URI="https://rpc.ankr.com/base";
 const SCR_NODE_URI="https://rpc.ankr.com/scroll";
 const OP_NODE_URI="https://rpc.ankr.com/optimism";
 const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
+const MNT_NODE_URI="https://mantle-rpc.publicnode.com";
+const LINEA_NODE_URI="https://1rpc.io/linea";
 const BLOCK_NUMBER = 275188482;
 
 module.exports = {
@@ -52,6 +54,18 @@ module.exports = {
     scroll: {
       url: SCR_NODE_URI,
       chainId: 534352,
+      accounts: [process.env.PK],
+      gasPrice: "auto"
+    },
+    mantle: {
+      url: MNT_NODE_URI,
+      chainId: 5000,
+      accounts: [process.env.PK],
+      gasPrice: "auto"
+    },
+    linea: {
+      url: LINEA_NODE_URI,
+      chainId: 59144,
       accounts: [process.env.PK],
       gasPrice: "auto"
     }

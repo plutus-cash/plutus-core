@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.22;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { MessagingFee, Origin } from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
 import { OAppRead } from "@layerzerolabs/oapp-evm/contracts/oapp/OAppRead.sol";
 import { MessagingReceipt } from "@layerzerolabs/oapp-evm/contracts/oapp/OAppSender.sol";
 import { IOAppMapper } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppMapper.sol";
 import { IOAppReducer } from "@layerzerolabs/oapp-evm/contracts/oapp/interfaces/IOAppReducer.sol";
 import { ReadCodecV1, EVMCallComputeV1, EVMCallRequestV1 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/ReadCodecV1.sol";
+
 import "../../interfaces/IMasterFacet.sol";
 
 contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
@@ -21,14 +21,62 @@ contract OReadFacet is IOReadFacet, OAppRead, IOAppMapper, IOAppReducer {
     mapping(uint32 => ChainConfig) public chainConfigs;
 
     constructor(
-        address _endpoint,
-        string memory _identifier
-    ) OAppRead(_endpoint, msg.sender) Ownable(msg.sender) {
-        identifier = _identifier;
+        address _endpoint
+    ) OAppRead(_endpoint, msg.sender) {
+        
+    }
+
+    function addChain(uint32 eid, ChainConfig memory chainConfig) external onlyAdmin {
+        chainConfigs[eid] = chainConfig;
     }
 
     string public identifier;
     bytes public data = abi.encode("Nothing received yet.");
+
+    function getPoolData(uint32 _eid, address _pool) onlyDiamond {
+        bytes memory cmd = getCmd(_eid, _pool);
+        return
+            _lzSend(
+                READ_CHANNEL,
+                cmd,
+                combineOptions(READ_CHANNEL, READ_MSG_TYPE, _extraOptions),
+                MessagingFee(msg.value, 0),
+                payable(msg.sender)
+            );
+    }
+
+    function getCmd(uint32 targetEid, address _pool) public view returns (bytes memory) {
+        EVMCallRequestV1 memory readRequest;
+        
+        ChainConfig memory config = chainConfigs[targetEid];
+        
+        address memory params = _pool;
+
+        
+        bytes memory callData = abi.encodeWithSelector(IMasterFacet.getPoolData.selector, params);
+        readRequest = EVMCallRequestV1({
+            appRequestLabel: uint16(i + 1),
+            targetEid: targetEid,
+            isBlockNum: false,
+            blockNumOrTimestamp: uint64(block.timestamp),
+            confirmations: config.confirmations,
+            to: config.zapAddress,
+            callData: callData
+        });
+        
+
+        EVMCallComputeV1 memory computeSettings = EVMCallComputeV1({
+            computeSetting: 2, // lzMap() and lzReduce()
+            targetEid: ILayerZeroEndpointV2(endpoint).eid(),
+            isBlockNum: false,
+            blockNumOrTimestamp: uint64(block.timestamp),
+            confirmations: 15,
+            to: address(this)
+        });
+
+        return ReadCodecV1.encode(0, readRequest, computeSettings);
+    }
+
 
     /**
      * @notice Send a read command in loopback through channelId

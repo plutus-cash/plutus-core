@@ -137,6 +137,8 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 - [Mantle Diamond](https://mantlescan.info/address/0x0E6273D9d54d29B4103e33078F90041D8DD7e2EB)
 - [Mantle ABI](https://github.com/plutus-cash/plutus-core/blob/master/deployments/mantle/UniswapV3Mnt.json)
 
+- [Unichain Diamond](https://unichain-sepolia.blockscout.com/address/0x0E6273D9d54d29B4103e33078F90041D8DD7e2EB)
+- [Unichain ABI](https://github.com/plutus-cash/plutus-core/blob/master/deployments/unichain/UniswapV3Uni.json)
 
 ---
 

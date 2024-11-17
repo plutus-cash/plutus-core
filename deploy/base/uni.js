@@ -11,12 +11,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     console.log('deployer', deployer);
     let zap = await deployDiamond(name, deployer);
     const facetNames = [
-        // 'AccessControlFacet',
-        // 'UniswapV3Facet',
+        'AccessControlFacet',
+        'UniswapV3Facet',
         'OReadFacet',
-        // 'MathFacet',
-        // 'ProportionFacet',
-        // 'ZapFacet'
+        'MathFacet',
+        'ProportionFacet',
+        'ZapFacet'
     ];
     await deployFacets(facetNames, deployer);
     const cut = await prepareCut(facetNames, zap.address, deployer);
@@ -33,9 +33,16 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         npm: "0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1",
         eid: 30184
     };
+
+    let lzParams = {
+        amount0: 0n,
+        amount1: 0n,
+        oread: "0x0B409D8f7DB675D23206e06a372Fede0719B23ba"
+    }
     
     await (await zap.setZapParams(zapParams)).wait();
     await (await zap.setProtocolParams(protocolParams)).wait();
+    await (await zap.setLzStorage(lzParams)).wait();
     console.log('setParams done()');
 };
 

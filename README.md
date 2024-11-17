@@ -126,7 +126,8 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ## Addresses
 
-- [Arbitrum Diamond]()
+- [Arbitrum Diamond](https://arbiscan.io/address/0x15806163De683Af2CAB832C940C24e5924F7332e)
+- [Arbitrum ABI]()
 
 ---
 

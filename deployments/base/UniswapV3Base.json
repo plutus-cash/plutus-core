@@ -435,6 +435,99 @@
     },
     {
       "type": "function",
+      "name": "getPositions",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        {
+          "type": "address",
+          "name": "owner"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple[]",
+          "name": "result",
+          "components": [
+            {
+              "type": "string",
+              "name": "platform"
+            },
+            {
+              "type": "uint256",
+              "name": "tokenId"
+            },
+            {
+              "type": "address",
+              "name": "poolId"
+            },
+            {
+              "type": "address",
+              "name": "token0"
+            },
+            {
+              "type": "address",
+              "name": "token1"
+            },
+            {
+              "type": "uint256",
+              "name": "decimals0"
+            },
+            {
+              "type": "uint256",
+              "name": "decimals1"
+            },
+            {
+              "type": "string",
+              "name": "symbol0"
+            },
+            {
+              "type": "string",
+              "name": "symbol1"
+            },
+            {
+              "type": "uint256",
+              "name": "amount0"
+            },
+            {
+              "type": "uint256",
+              "name": "amount1"
+            },
+            {
+              "type": "uint256",
+              "name": "fee0"
+            },
+            {
+              "type": "uint256",
+              "name": "fee1"
+            },
+            {
+              "type": "uint256",
+              "name": "emissions"
+            },
+            {
+              "type": "int24",
+              "name": "tickLower"
+            },
+            {
+              "type": "int24",
+              "name": "tickUpper"
+            },
+            {
+              "type": "int24",
+              "name": "currentTick"
+            },
+            {
+              "type": "bool",
+              "name": "isStaked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "increaseLiquidity",
       "constant": false,
       "payable": false,
@@ -609,416 +702,8 @@
       "outputs": []
     },
     {
-      "type": "constructor",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_endpoint"
-        },
-        {
-          "type": "uint32",
-          "name": "_readChannel"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "InvalidDelegate",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "InvalidEndpointCall",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "InvalidOptions",
-      "inputs": [
-        {
-          "type": "bytes",
-          "name": "options"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "LzTokenUnavailable",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "NoPeer",
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "NotEnoughNative",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "msgValue"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "OnlyEndpoint",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "addr"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "OnlyPeer",
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid"
-        },
-        {
-          "type": "bytes32",
-          "name": "sender"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "OwnableInvalidOwner",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "owner"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "OwnableUnauthorizedAccount",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "account"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "SafeCastOverflowedUintDowncast",
-      "inputs": [
-        {
-          "type": "uint8",
-          "name": "bits"
-        },
-        {
-          "type": "uint256",
-          "name": "value"
-        }
-      ]
-    },
-    {
-      "type": "error",
-      "name": "SafeERC20FailedOperation",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "token"
-        }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
-      "name": "EnforcedOptionSet",
-      "inputs": [
-        {
-          "type": "tuple[]",
-          "name": "_enforcedOptions",
-          "indexed": false,
-          "components": [
-            {
-              "type": "uint32",
-              "name": "eid"
-            },
-            {
-              "type": "uint16",
-              "name": "msgType"
-            },
-            {
-              "type": "bytes",
-              "name": "options"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
-      "name": "OwnershipTransferred",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "previousOwner",
-          "indexed": true
-        },
-        {
-          "type": "address",
-          "name": "newOwner",
-          "indexed": true
-        }
-      ]
-    },
-    {
-      "type": "event",
-      "anonymous": false,
-      "name": "PeerSet",
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid",
-          "indexed": false
-        },
-        {
-          "type": "bytes32",
-          "name": "peer",
-          "indexed": false
-        }
-      ]
-    },
-    {
       "type": "function",
-      "name": "READ_CHANNEL",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint32"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "addChain",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid"
-        },
-        {
-          "type": "tuple",
-          "name": "chainConfig",
-          "components": [
-            {
-              "type": "uint16",
-              "name": "confirmations"
-            },
-            {
-              "type": "address",
-              "name": "zapAddress"
-            }
-          ]
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "allowInitializePath",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "tuple",
-          "name": "origin",
-          "components": [
-            {
-              "type": "uint32",
-              "name": "srcEid"
-            },
-            {
-              "type": "bytes32",
-              "name": "sender"
-            },
-            {
-              "type": "uint64",
-              "name": "nonce"
-            }
-          ]
-        }
-      ],
-      "outputs": [
-        {
-          "type": "bool"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "amount1",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint256"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "amount2",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint256"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "chainConfigs",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "uint16",
-          "name": "confirmations"
-        },
-        {
-          "type": "address",
-          "name": "zapAddress"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "combineOptions",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "_eid"
-        },
-        {
-          "type": "uint16",
-          "name": "_msgType"
-        },
-        {
-          "type": "bytes",
-          "name": "_extraOptions"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "bytes"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "data",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "bytes"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "endpoint",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "address"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "enforcedOptions",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid"
-        },
-        {
-          "type": "uint16",
-          "name": "msgType"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "bytes",
-          "name": "enforcedOption"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "getCmdData",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "targetEid"
-        },
-        {
-          "type": "address",
-          "name": "_pool"
-        },
-        {
-          "type": "int24[]",
-          "name": "tickRange"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "bytes"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "getProportion",
+      "name": "getProportionLZ",
       "constant": false,
       "stateMutability": "payable",
       "payable": true,
@@ -1073,289 +758,43 @@
     },
     {
       "type": "function",
-      "name": "isComposeMsgSender",
+      "name": "getResult",
       "constant": true,
       "stateMutability": "view",
       "payable": false,
-      "inputs": [
-        {
-          "type": "tuple",
-          "components": [
-            {
-              "type": "uint32",
-              "name": "srcEid"
-            },
-            {
-              "type": "bytes32",
-              "name": "sender"
-            },
-            {
-              "type": "uint64",
-              "name": "nonce"
-            }
-          ]
-        },
-        {
-          "type": "bytes"
-        },
-        {
-          "type": "address",
-          "name": "_sender"
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "type": "bool"
+          "type": "uint256"
+        },
+        {
+          "type": "uint256"
         }
       ]
     },
     {
       "type": "function",
-      "name": "lzReceive",
+      "name": "setLzStorage",
       "constant": false,
-      "stateMutability": "payable",
-      "payable": true,
+      "payable": false,
       "inputs": [
         {
           "type": "tuple",
-          "name": "_origin",
-          "components": [
-            {
-              "type": "uint32",
-              "name": "srcEid"
-            },
-            {
-              "type": "bytes32",
-              "name": "sender"
-            },
-            {
-              "type": "uint64",
-              "name": "nonce"
-            }
-          ]
-        },
-        {
-          "type": "bytes32",
-          "name": "_guid"
-        },
-        {
-          "type": "bytes",
-          "name": "_message"
-        },
-        {
-          "type": "address",
-          "name": "_executor"
-        },
-        {
-          "type": "bytes",
-          "name": "_extraData"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "nextNonce",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32"
-        },
-        {
-          "type": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "uint64",
-          "name": "nonce"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "oAppVersion",
-      "constant": true,
-      "stateMutability": "pure",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint64",
-          "name": "senderVersion"
-        },
-        {
-          "type": "uint64",
-          "name": "receiverVersion"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "owner",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "address"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "peers",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "eid"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "bytes32",
-          "name": "peer"
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "quoteCmdData",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "targetEid"
-        },
-        {
-          "type": "address",
-          "name": "_pool"
-        },
-        {
-          "type": "int24[]",
-          "name": "tickRange"
-        },
-        {
-          "type": "bytes",
-          "name": "_extraOptions"
-        }
-      ],
-      "outputs": [
-        {
-          "type": "tuple",
-          "name": "fee",
+          "name": "args",
           "components": [
             {
               "type": "uint256",
-              "name": "nativeFee"
+              "name": "amount0"
             },
             {
               "type": "uint256",
-              "name": "lzTokenFee"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "function",
-      "name": "renounceOwnership",
-      "constant": false,
-      "payable": false,
-      "inputs": [],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "setDelegate",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_delegate"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "setEnforcedOptions",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "tuple[]",
-          "name": "_enforcedOptions",
-          "components": [
-            {
-              "type": "uint32",
-              "name": "eid"
+              "name": "amount1"
             },
             {
-              "type": "uint16",
-              "name": "msgType"
-            },
-            {
-              "type": "bytes",
-              "name": "options"
+              "type": "address",
+              "name": "oread"
             }
           ]
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "setPeer",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "_eid"
-        },
-        {
-          "type": "bytes32",
-          "name": "_peer"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "setReadChannel",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "uint32",
-          "name": "_channelId"
-        },
-        {
-          "type": "bool",
-          "name": "_active"
-        }
-      ],
-      "outputs": []
-    },
-    {
-      "type": "function",
-      "name": "transferOwnership",
-      "constant": false,
-      "payable": false,
-      "inputs": [
-        {
-          "type": "address",
-          "name": "newOwner"
         }
       ],
       "outputs": []
@@ -1539,6 +978,83 @@
       ]
     },
     {
+      "type": "function",
+      "name": "getProportionForZap",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
+        {
+          "type": "tuple",
+          "name": "request",
+          "components": [
+            {
+              "type": "address",
+              "name": "pair"
+            },
+            {
+              "type": "int24[]",
+              "name": "tickRange"
+            },
+            {
+              "type": "tuple[]",
+              "name": "inputTokens",
+              "components": [
+                {
+                  "type": "address",
+                  "name": "tokenAddress"
+                },
+                {
+                  "type": "uint256",
+                  "name": "amount"
+                },
+                {
+                  "type": "uint256",
+                  "name": "price"
+                }
+              ]
+            },
+            {
+              "type": "uint256[]",
+              "name": "tokenIds"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "tuple",
+          "name": "result",
+          "components": [
+            {
+              "type": "address[]",
+              "name": "inputTokenAddresses"
+            },
+            {
+              "type": "uint256[]",
+              "name": "inputTokenAmounts"
+            },
+            {
+              "type": "address[]",
+              "name": "outputTokenAddresses"
+            },
+            {
+              "type": "uint256[]",
+              "name": "outputTokenProportions"
+            },
+            {
+              "type": "uint256[]",
+              "name": "outputTokenAmounts"
+            },
+            {
+              "type": "uint256[]",
+              "name": "poolProportionsUsd"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "type": "error",
       "name": "SimulationResult",
       "inputs": [
@@ -1557,14 +1073,6 @@
         {
           "type": "uint256[]",
           "name": "returnedAmounts"
-        },
-        {
-          "type": "uint256",
-          "name": "amountToSwap"
-        },
-        {
-          "type": "bool",
-          "name": "swapSide"
         }
       ]
     },
@@ -1656,19 +1164,6 @@
     },
     {
       "type": "function",
-      "name": "remainingLiquidityThreshold",
-      "constant": true,
-      "stateMutability": "view",
-      "payable": false,
-      "inputs": [],
-      "outputs": [
-        {
-          "type": "uint256"
-        }
-      ]
-    },
-    {
-      "type": "function",
       "name": "setZapParams",
       "constant": false,
       "payable": false,
@@ -1680,14 +1175,6 @@
             {
               "type": "address",
               "name": "inchRouter"
-            },
-            {
-              "type": "uint256",
-              "name": "binSearchIterations"
-            },
-            {
-              "type": "uint256",
-              "name": "remainingLiquidityThreshold"
             }
           ]
         }
@@ -1733,7 +1220,7 @@
               ]
             },
             {
-              "type": "bytes[]",
+              "type": "bytes",
               "name": "data"
             }
           ]
@@ -1753,18 +1240,6 @@
             {
               "type": "uint256[]",
               "name": "amountsOut"
-            },
-            {
-              "type": "bool",
-              "name": "isSimulation"
-            },
-            {
-              "type": "bool",
-              "name": "adjustSwapSide"
-            },
-            {
-              "type": "uint256",
-              "name": "adjustSwapAmount"
             }
           ]
         }

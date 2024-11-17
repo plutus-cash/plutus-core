@@ -9,6 +9,8 @@ const OP_NODE_URI="https://rpc.ankr.com/optimism";
 const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
 const MNT_NODE_URI="https://mantle-rpc.publicnode.com";
 const LINEA_NODE_URI="https://1rpc.io/linea";
+const UNI_NODE_URI="https://sepolia.unichain.org";
+
 const BLOCK_NUMBER = 275188482;
 
 module.exports = {
@@ -66,6 +68,12 @@ module.exports = {
     linea: {
       url: LINEA_NODE_URI,
       chainId: 59144,
+      accounts: [process.env.PK],
+      gasPrice: "auto"
+    },
+    unichain: {
+      url: UNI_NODE_URI,
+      chainId: 1301,
       accounts: [process.env.PK],
       gasPrice: "auto"
     }

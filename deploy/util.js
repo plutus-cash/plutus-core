@@ -261,6 +261,8 @@ async function deployFacets(facetNames, deployer) {
             args: [],
             log: true,
             skipIfAlreadyDeployed: false,
+            gasLimit: 1500000,
+            gasPrice: 15000000
         });
         
 

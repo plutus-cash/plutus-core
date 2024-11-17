@@ -2,7 +2,7 @@ const { ethers } = require("hardhat");
 const hre = require("hardhat");
 const { deployDiamond, deployFacets, prepareCut, updateFacets, updateAbi } = require("../util");
 
-const name = 'UniswapV3Mnt';
+const name = 'UniswapV3Uni';
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     // await transferETH(0.00001, "0x0000000000000000000000000000000000000000");
@@ -25,17 +25,17 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     zap = await ethers.getContract(name);
     let zapParams = {
-        inchRouter: "0x111111125421cA6dc452d289314280a0f8842A65"
+        inchRouter: "0xa669e7A0d4b3e4Fa48af2dE86BD4CD7126Be4e13"
     };
     let protocolParams = {
-        npm: "0x5911cB3633e764939edc2d92b7e1ad375Bb57649",
+        npm: "0xA591bdD2216C735334E1773aCdE26679588e30Fd",
         eid: 30110
     };
 
     let lzParams = {
         amount0: 0n,
         amount1: 0n,
-        oread: "0x0"
+        oread: "0x5be0CC1EF5b089d6cB4958910cc3dccD6AafB7Ae"
     }
     
     await (await zap.setZapParams(zapParams)).wait();

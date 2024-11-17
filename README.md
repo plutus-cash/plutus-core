@@ -126,8 +126,17 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ## Addresses
 
+*Contract are not verified because we have Diamond contract structure, which is not supported by blockchain scans, but in this repo you can find all contracts, abis and addresses*
+
 - [Arbitrum Diamond](https://arbiscan.io/address/0x15806163De683Af2CAB832C940C24e5924F7332e)
-- [Arbitrum ABI]()
+- [Arbitrum ABI](https://github.com/plutus-cash/plutus-core/blob/master/deployments/arbitrum/UniswapV3Arb.json)
+
+- [Base Diamond](https://basescan.org/address/0x88496773aC402210D21Bd7b3Bd8E540038A2f75f)
+- [Base ABI](https://github.com/plutus-cash/plutus-core/blob/master/deployments/base/UniswapV3Base.json)
+
+- [Mantle Diamond](https://mantlescan.info/address/0x0E6273D9d54d29B4103e33078F90041D8DD7e2EB)
+- [Mantle ABI](https://github.com/plutus-cash/plutus-core/blob/master/deployments/mantle/UniswapV3Mnt.json)
+
 
 ---
 

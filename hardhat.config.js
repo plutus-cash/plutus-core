@@ -4,7 +4,7 @@ const dotenv = require('dotenv/config');
 
 const ETH_NODE_URI="https://rpc.ankr.com/eth";
 const BASE_NODE_URI="https://rpc.ankr.com/base";
-const SCR_NODE_URI="https://rpc.ankr.com/scroll";
+const SCR_NODE_URI="https://sepolia-rpc.scroll.io";
 const OP_NODE_URI="https://rpc.ankr.com/optimism";
 const ARB_NODE_URI="https://rpc.ankr.com/arbitrum";
 const MNT_NODE_URI="https://mantle-rpc.publicnode.com";
@@ -55,7 +55,7 @@ module.exports = {
     },
     scroll: {
       url: SCR_NODE_URI,
-      chainId: 534352,
+      chainId: 534351,
       accounts: [process.env.PK],
       gasPrice: "auto"
     },
